@@ -1,10 +1,9 @@
 // includes
+#include "Game.h"
 
 // entry point
 int main()
 {
-	/*
-	Game & game = new Game();
+	Game & game = Game();
 	game.run();
-	/**/
 }
