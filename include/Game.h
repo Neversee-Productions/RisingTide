@@ -3,6 +3,8 @@
 
 // SFML Libraries
 #include "SFML\Graphics.hpp"
+// Thor Libraries
+#include "Thor\Animations.hpp"
 
 class Game
 {
@@ -27,6 +29,8 @@ private:
 
 	// tracks time between frames
 	sf::Time m_elapsed;
+
+	thor::Animator<sf::Sprite, int> m_animator;
 
 };
 

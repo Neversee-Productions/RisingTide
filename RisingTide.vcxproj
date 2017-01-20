@@ -76,10 +76,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>.\lib\SFML;.\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>.\lib\SFML;.\lib\Thor;.\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>.\lib\SFML;.\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>.\lib\SFML;.\lib\Thor;.\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
