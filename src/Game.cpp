@@ -26,6 +26,7 @@ void Game::run()
 			m_elapsed -= TIME_PER_UPDATE;
 			update(m_elapsed);
 		}
+		render();
 
 	}
 }
