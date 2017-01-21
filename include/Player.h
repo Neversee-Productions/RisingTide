@@ -3,7 +3,13 @@
 
 // player includes
 #include "SFML\Graphics.hpp"
+#include <memory>
 #include <math.h>
+#include "Thor\Animations\Animator.hpp"
+#include "Thor\Animations\FrameAnimation.hpp"
+
+
+
 
 class Player
 {
@@ -11,7 +17,14 @@ public:
 	Player();
 	Player(sf::Vector2f const &);
 
+	enum class AnimState
+	{
+		Idle, Run, JumpStart, JumpLoop, FallStart, FallLoop
+	};
 	
+	// pointer to collection of animations
+	typedef std::map<AnimState, sf::Texture> TextureCollection;
+
 	sf::Vector2f getUnitVector(sf::Vector2f);
 
 	float m_coefficientOfFriction;
@@ -26,6 +39,9 @@ public:
 
 	bool loadTexture(const sf::String &);
 
+	void addAnimTextures(TextureCollection);
+	void addAnimRects(int, int, int, int);
+
 	static float const GRAVITY;
 
 	enum class PlayerState
@@ -33,19 +49,20 @@ public:
 		Ground, Jump, Fall
 	};
 
-	enum class AnimState
-	{
-		Idle, Run, JumpStart, JumpLoop, FallStart, FallLoop
-	};
+	
 	PlayerState getPlayerState() const;
 	sf::FloatRect getBounds() const;
 
 	void land(const float &, const double &);
 
+	void initSprite();
+	void adjustSprite();
+
 private:
 	void processInput();
 	void trackAnimStates();
 	void lateralMovement(float num);
+
 	// movement CONSTANTS
 	sf::Vector2f const JUMP_FORCE = sf::Vector2f(0.0f, -8.0f);
 
@@ -69,6 +86,29 @@ private:
 	AnimState m_animState;
 	// gravity in units
 	float m_gravity;
+
+	// Plays stored animations
+	thor::Animator<sf::Sprite, AnimState> m_animator;
+	
+	std::vector<std::unique_ptr<thor::FrameAnimation>> m_animations;
+
+	TextureCollection m_textureMap;
+
+	// ANIMATION DURATIONS //
+
+	const sf::Time IDLE_DUR = sf::seconds(2.0f);
+	const sf::Time RUN_DUR = sf::seconds(2.0f);
+	const sf::Time JUMP_START_DUR = sf::seconds(2.0f);
+	const sf::Time JUMP_LOOP_DUR = sf::seconds(2.0f);
+	const sf::Time FALL_START_DUR = sf::seconds(2.0f);
+	const sf::Time FALL_LOOP_DUR = sf::seconds(2.0f);
+
+	// scale of the sprite
+	float const SCALE = 0.5f;
+
+	// offset to the origin
+	sf::Vector2f m_offset;
+
 };
 
 #endif // !PLAYER
