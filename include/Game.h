@@ -10,6 +10,7 @@
 #include <string>
 #include "Player.h"
 #include "Platform.h"
+#include "SplashScreen.h"
 #include <memory>
 
 class Game
@@ -69,6 +70,7 @@ private:
 	//
 	sf::Texture m_platformTexture;
 	sf::Texture m_floorTexture;
+	sf::Texture m_splashScreenTexture;
   
 	Player m_player;
 
@@ -78,9 +80,21 @@ private:
 
 	std::vector<std::unique_ptr<thor::FrameAnimation>> m_animations;
 	
+	thor::Animator<sf::Sprite,int> m_waveAnimator;
+	thor::FrameAnimation m_waveAnimation;
+
+	sf::Sprite m_waveSprite;
+	sf::Texture m_waveTexture;
+	sf::Sprite m_cliffRightSprite;
+	sf::Sprite m_cliffLeftSprite;
+	sf::Texture m_cliffTexture;
+
 	// floor
 	std::unique_ptr<Platform> m_floor;
 
+	enum class GameState {Splash, Gameplay};
+	GameState m_gameState = GameState::Splash;
+	std::unique_ptr<SplashScreen> m_splashScreen;
 };
 
 #endif // !GAME

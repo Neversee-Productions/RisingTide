@@ -22,9 +22,17 @@ Game::Game()
 	}
 	loadTexture(m_platformTexture, ".\\resources\\platform\\platform.png");
 	loadTexture(m_floorTexture, ".\\resources\\platform\\floor.png");
-
+	loadTexture(m_splashScreenTexture, ".\\resources\\backgrounds\\splash_screen.png");
+	loadTexture(m_waveTexture, ".\\resources\\waves\\wave_animated.png");
+	loadTexture(m_cliffTexture, ".\\resources\\backgrounds\\cliff.png");
+	m_cliffRightSprite.setTexture(m_cliffTexture);
+	m_cliffLeftSprite.setTexture(m_cliffTexture);
+	m_cliffLeftSprite.setScale(-1.0f, 1.0f);
+	m_cliffLeftSprite.setPosition(sf::Vector2f(m_cliffLeftSprite.getGlobalBounds().width, 0.0f));
+	m_cliffRightSprite.setPosition(sf::Vector2f(m_window.getSize().x - m_cliffRightSprite.getGlobalBounds().width, 0));
+	m_waveSprite.setTexture(m_waveTexture);
 	m_floor.reset(new Platform(m_floorTexture, FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y));
-
+	m_splashScreen.reset(new SplashScreen(m_splashScreenTexture));
 	loadAnimTextures();
 }
 
@@ -61,6 +69,12 @@ void Game::proccessEvents()
 		case sf::Event::Closed:
 			m_window.close();
 			break;
+		case sf::Event::KeyPressed:
+			if (m_gameState == GameState::Splash)
+			{
+				m_gameState = GameState::Gameplay;
+			}
+			break;
 		default:
 			break;
 		}
@@ -70,34 +84,53 @@ void Game::proccessEvents()
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
-	if (spawnNextPlatfrom());
-	removePlatfrom();
-	for (std::unique_ptr<Platform>& plat : m_platforms)
-
+	switch (m_gameState)
 	{
-		plat->update(dt);
+	case Game::GameState::Splash:
+		break;
+	case Game::GameState::Gameplay:
+		if (spawnNextPlatfrom());
+		removePlatfrom();
+		for (std::unique_ptr<Platform>& plat : m_platforms)
+
+		{
+			plat->update(dt);
+		}
+
+		m_player.update(dt.asSeconds());
+
+		m_floor->update(dt);
+
+		checkcollision();
+		break;
+	default:
+		break;
 	}
-
-	m_player.update(dt.asSeconds());
-
-	m_floor->update(dt);
-
-	checkcollision();
 }
 
 /// Main rendering loop
 void Game::render()
 {
 	m_window.clear();
-	for (std::unique_ptr<Platform>& plat : m_platforms)
+	switch (m_gameState)
 	{
-		plat->draw(m_window);
+	case Game::GameState::Splash:
+		m_splashScreen->draw(m_window);
+		break;
+	case Game::GameState::Gameplay:
+		for (std::unique_ptr<Platform>& plat : m_platforms)
+		{
+			plat->draw(m_window);
+		}
+		m_player.draw(m_window);
+
+		m_floor->draw(m_window);
+		m_window.draw(m_cliffLeftSprite);
+		m_window.draw(m_cliffRightSprite);
+		break;
+	default:
+		break;
 	}
-  
-	m_player.draw(m_window);
-
-	m_floor->draw(m_window);
-
 	m_window.display();
 }
 
