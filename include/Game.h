@@ -5,10 +5,10 @@
 #include "SFML\Graphics.hpp"
 // Thor Libraries
 #include "Thor\Animations.hpp"
+#include "Player.h"
 
 // Game libraries
 #include <string>
-#include "Player.h"
 
 class Game
 {
@@ -39,9 +39,8 @@ private:
 	// tracks time between frames
 	sf::Time m_elapsed;
   
-	// player
 	Player m_player;
-
+  
 	thor::Animator<sf::Sprite, int> m_animator;
 	
 };

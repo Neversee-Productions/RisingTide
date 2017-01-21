@@ -1,6 +1,7 @@
 #include "Player.h"
 
 
+
 /// <summary>
 /// Gets unit vector using the formula (the vector divided by its length)
 /// x = x / sqrt(x*x + y*y)
