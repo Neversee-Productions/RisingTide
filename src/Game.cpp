@@ -7,6 +7,9 @@ Game::Game()
 	, m_elapsed()
 	, m_player(START_POS)
 {
+	srand(time(NULL));
+
+	platform.push_back(Platform());
 
 	if (!m_player.loadTexture(".\\resources\\player\\player.png"))
 	{
@@ -61,6 +64,15 @@ void Game::proccessEvents()
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
+	while (spawnNextPlatfrom())
+	{
+		platform.push_back(Platform());
+	}
+	for (auto& plat : platform)
+	{
+		plat.update(dt);
+	}
+  
 	m_player.update(dt.asSeconds());
 }
 
@@ -68,8 +80,29 @@ void Game::update(sf::Time const & dt)
 void Game::render()
 {
 	m_window.clear();
-
-	m_player.draw(m_window);
-
+	for (Platform& plat : platform)
+	{
+		plat.draw(m_window);
+	}
+  m_player.draw(m_window);
+  
 	m_window.display();
+}
+
+bool Game::spawnNextPlatfrom()
+{
+	m_platformElapsedTime = m_platformElapsedClock.restart();
+	m_accumulatedTime += m_platformElapsedTime.asSeconds();
+	if (m_accumulatedTime > 1.5)
+	{
+		m_accumulatedTime = 0;
+		return true;
+	}
+	
+	return false;
+}
+
+void Game::removePlatfrom()
+{
+	
 }
