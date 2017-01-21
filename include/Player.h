@@ -3,7 +3,6 @@
 
 // player includes
 #include "SFML\Graphics.hpp"
-
 #include <math.h>
 
 class Player

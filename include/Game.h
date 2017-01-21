@@ -5,11 +5,10 @@
 #include "SFML\Graphics.hpp"
 // Thor Libraries
 #include "Thor\Animations.hpp"
-#include "Player.h"
 
 // Game libraries
 #include <string>
-
+#include "Player.h"
 #include "Platform.h"
 
 class Game
