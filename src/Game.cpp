@@ -5,10 +5,19 @@ Game::Game()
 	: m_window(sf::VideoMode(800u, 600u, 32u), "Rising Tide", sf::Style::Default)
 	, m_clock()
 	, m_elapsed()
+	, m_player(START_POS)
 {
 	srand(time(NULL));
 
 	platform.push_back(Platform());
+
+	if (!m_player.loadTexture(".\\resources\\player\\player.png"))
+	{
+		std::string s("Error player texture (");
+		s += ".\\resources\\player\\player.png";
+		s += ") was not loaded";
+		throw std::exception(s.c_str());
+	}
 }
 
 /// Default destructor
@@ -55,7 +64,6 @@ void Game::proccessEvents()
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
-	
 	while (spawnNextPlatfrom())
 	{
 		platform.push_back(Platform());
@@ -64,6 +72,8 @@ void Game::update(sf::Time const & dt)
 	{
 		plat.update(dt);
 	}
+  
+	m_player.update(dt.asSeconds());
 }
 
 /// Main rendering loop
@@ -74,7 +84,8 @@ void Game::render()
 	{
 		plat.draw(m_window);
 	}
-
+  m_player.draw(m_window);
+  
 	m_window.display();
 }
 
@@ -87,7 +98,7 @@ bool Game::spawnNextPlatfrom()
 		m_accumulatedTime = 0;
 		return true;
 	}
-
+	
 	return false;
 }
 
