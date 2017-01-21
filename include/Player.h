@@ -29,13 +29,13 @@ private:
 	void processInput();
 
 	// movement CONSTANTS
-	sf::Vector2f const JUMP_FORCE = sf::Vector2f(0.0f, -10.0f);
+	sf::Vector2f const JUMP_FORCE = sf::Vector2f(0.0f, -8.0f);
 
 	// size
 	sf::Vector2f const SIZE = sf::Vector2f(21.0f, 64.0f);
 
 	// pixel to Unit conversion
-	const float PIXEL_TO_UNIT = 10.0f;
+	const float PIXEL_TO_UNIT = 30.0f;
 
 	// movement vectors
 	sf::Vector2f m_position;

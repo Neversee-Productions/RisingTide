@@ -49,8 +49,16 @@ void Player::update(const double & dt)
 	case Player::PlayerState::Jump:
 		m_velocity.y += m_gravity * dt;
 		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
+
+		if (m_velocity.y <= -1.0f * dt)
+		{
+			m_playerState = PlayerState::Fall;
+		}
 		break;
 	case Player::PlayerState::Fall:
+		m_velocity.y += m_gravity * dt;
+		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
+
 		break;
 	default:
 		break;
@@ -91,6 +99,9 @@ bool Player::loadTexture(const sf::String & filePath)
 	return loaded;
 }
 
+/// <summary>
+/// takes input based on current player state
+/// </summary>
 void Player::processInput()
 {
 	switch (m_playerState)

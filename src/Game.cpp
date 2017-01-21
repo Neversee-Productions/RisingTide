@@ -61,10 +61,6 @@ void Game::proccessEvents()
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-	{
-		drawCircle = !drawCircle;
-	}
 
 	m_player.update(dt.asSeconds());
 }
