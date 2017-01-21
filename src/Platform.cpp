@@ -26,8 +26,13 @@ void Platform::draw(sf::RenderWindow & window)
 	window.draw(m_rectangle);
 }
 
-void Platform::update()
+void Platform::update(const sf::Time& dt)
 {
+	time += dt;
+	if (time > PLATFORM_SPAWN_TIME)
+	{
+
+	}
 	m_rectangle.setPosition(m_position);
 	m_position.y+=m_fallSpeed;
 }

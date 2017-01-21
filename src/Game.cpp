@@ -62,7 +62,7 @@ void Game::update(sf::Time const & dt)
 	}
 	for (auto& plat : platform)
 	{
-		plat.update();
+		plat.update(dt);
 	}
 }
 
@@ -70,11 +70,6 @@ void Game::update(sf::Time const & dt)
 void Game::render()
 {
 	m_window.clear();
-
-	sf::CircleShape circle(10.0f, 30u);
-
-	circle.setPosition(sf::Vector2f(10.0f, 10.0f));
-	m_window.draw(circle);
 	for (Platform& plat : platform)
 	{
 		plat.draw(m_window);
