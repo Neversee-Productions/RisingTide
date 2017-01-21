@@ -61,7 +61,13 @@ private:
 	float m_accumulatedTime = 0;
 
 	// platform instance
-	std::vector<Platform> m_platforms;
+	std::vector<std::unique_ptr<Platform>> m_platforms;
+
+	// Loading texture from file
+	void loadTexture(sf::Texture&, std::string);
+
+	//
+	sf::Texture m_platformTexture;
 	sf::Time m_platformElapsedTime;
 	sf::Clock m_platformElapsedClock;
   
