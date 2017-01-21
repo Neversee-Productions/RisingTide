@@ -1,0 +1,27 @@
+#pragma once
+#include "SFML\Graphics.hpp"
+#include <time.h>
+
+class Platform
+{
+public:
+	Platform();
+	~Platform();
+
+	void draw(sf::RenderWindow& window);
+	void update();
+
+	float m_fallSpeed = 1.7f; /*speed of platforms*/
+	bool offScreen();
+
+private: 
+	sf::Vector2f m_position; /*Position of the rectangle*/
+
+	sf::RectangleShape m_rectangle;
+	const float SIZE = 150.0f; /*Block will alsways be 20 and expand*/
+
+	float m_offset; /*change size of Platform*/
+	float m_randX;  /*random spawingin on x axis*/
+
+};
+

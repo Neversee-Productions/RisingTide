@@ -6,6 +6,9 @@ Game::Game()
 	, m_clock()
 	, m_elapsed()
 {
+	srand(time(NULL));
+
+	platform.push_back(Platform());
 }
 
 /// Default destructor
@@ -24,7 +27,7 @@ void Game::run()
 		while (m_elapsed > TIME_PER_UPDATE)
 		{
 			m_elapsed -= TIME_PER_UPDATE;
-			update(m_elapsed);
+			update(TIME_PER_UPDATE);
 		}
 		render();
 
@@ -52,7 +55,15 @@ void Game::proccessEvents()
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
-
+	
+	while (spawnNextPlatfrom())
+	{
+		platform.push_back(Platform());
+	}
+	for (auto& plat : platform)
+	{
+		plat.update();
+	}
 }
 
 /// Main rendering loop
@@ -64,6 +75,28 @@ void Game::render()
 
 	circle.setPosition(sf::Vector2f(10.0f, 10.0f));
 	m_window.draw(circle);
+	for (Platform& plat : platform)
+	{
+		plat.draw(m_window);
+	}
 
 	m_window.display();
+}
+
+bool Game::spawnNextPlatfrom()
+{
+	m_platformElapsedTime = m_platformElapsedClock.restart();
+	m_accumulatedTime += m_platformElapsedTime.asSeconds();
+	if (m_accumulatedTime > 1.5)
+	{
+		m_accumulatedTime = 0;
+		return true;
+	}
+
+	return false;
+}
+
+void Game::removePlatfrom()
+{
+	
 }
