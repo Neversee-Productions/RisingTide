@@ -1,7 +1,6 @@
 #include "Player.h"
 #include <iostream>
 
-
 /// <summary>
 /// Gets unit vector using the formula (the vector divided by its length)
 /// x = x / sqrt(x*x + y*y)
@@ -83,6 +82,9 @@ void Player::update(const double & dt)
 	
 	/*-------------------------------------------------------------*/
 	
+	m_velocity.y += m_gravity * dt;
+	m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
+
 	processInput();
 	trackAnimStates();
 	switch (m_playerState)
@@ -99,9 +101,6 @@ void Player::update(const double & dt)
 		}
 		break;
 	case Player::PlayerState::Fall:
-		m_velocity.y += m_gravity * dt;
-		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
-
 		break;
 	default:
 		break;
@@ -267,4 +266,19 @@ void Player::lateralMovement(float num)
 			m_force += m_forceIncrement;
 		}
 	}
+	
+Player::PlayerState Player::getPlayerState() const
+{
+	return m_playerState;
+}
+
+sf::FloatRect Player::getBounds() const
+{
+	return m_sprite.getGlobalBounds();
+}
+
+void Player::land(const float & landHeight, const double & dt)
+{
+	m_playerState = PlayerState::Ground;
+	m_velocity.y = (landHeight - m_sprite.getGlobalBounds().height) * dt;
 }

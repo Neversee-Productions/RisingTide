@@ -12,8 +12,17 @@ Platform::Platform()
 	m_rectangle.setSize(sf::Vector2f(SIZE + m_offset, 30));
 
 	sf::FloatRect rect = m_rectangle.getGlobalBounds();
-	m_rectangle.setOrigin(rect.width / 2.0f, rect.height / 2.0f);
 
+}
+
+
+Platform::Platform(float x, float y, float width, float height)
+	: m_position(x, y)
+{
+	m_offset = 0.0f;
+	m_randX = 0.0f;
+	m_rectangle.setSize(sf::Vector2f(width, height));
+	m_rectangle.setPosition(m_position);
 }
 
 
@@ -35,6 +44,14 @@ void Platform::update(const sf::Time& dt)
 	}
 	m_rectangle.setPosition(m_position);
 	m_position.y+=m_fallSpeed;
+}
+
+sf::FloatRect Platform::getBounds() const
+{
+	sf::FloatRect rect = m_rectangle.getGlobalBounds();
+	rect.left = m_position.x;
+	rect.top = m_position.y;
+	return rect;
 }
 
 

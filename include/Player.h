@@ -37,6 +37,10 @@ public:
 	{
 		Idle, Run, JumpStart, JumpLoop, FallStart, FallLoop
 	};
+	PlayerState getPlayerState() const;
+	sf::FloatRect getBounds() const;
+
+	void land(const float &, const double &);
 
 private:
 	void processInput();
@@ -49,11 +53,13 @@ private:
 	sf::Vector2f const SIZE = sf::Vector2f(21.0f, 64.0f);
 
 	// pixel to Unit conversion
-	const float PIXEL_TO_UNIT = 30.0f;
+	const float PIXEL_TO_UNIT = 100.0f;
 
 	// movement vectors
+public:
 	sf::Vector2f m_position;
 	sf::Vector2f m_velocity;
+private:
 	sf::Vector2f m_acceleration;
 
 	sf::Texture m_texture;
