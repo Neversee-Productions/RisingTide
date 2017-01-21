@@ -24,7 +24,7 @@ void Game::run()
 		while (m_elapsed > TIME_PER_UPDATE)
 		{
 			m_elapsed -= TIME_PER_UPDATE;
-			update(m_elapsed);
+			update(TIME_PER_UPDATE);
 		}
 		render();
 
@@ -52,7 +52,7 @@ void Game::proccessEvents()
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
-
+	m_player.update(dt.asSeconds());
 }
 
 /// Main rendering loop
@@ -64,6 +64,6 @@ void Game::render()
 
 	circle.setPosition(sf::Vector2f(10.0f, 10.0f));
 	m_window.draw(circle);
-
+	m_player.draw(m_window);
 	m_window.display();
 }

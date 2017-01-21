@@ -5,7 +5,7 @@
 #include "SFML\Graphics.hpp"
 // Thor Libraries
 #include "Thor\Animations.hpp"
-
+#include "Player.h"
 class Game
 {
 public:
@@ -29,7 +29,7 @@ private:
 
 	// tracks time between frames
 	sf::Time m_elapsed;
-
+	Player m_player;
 	thor::Animator<sf::Sprite, int> m_animator;
 
 };
