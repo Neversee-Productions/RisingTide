@@ -10,6 +10,7 @@
 #include <string>
 #include "Player.h"
 #include "Platform.h"
+#include <memory>
 
 class Game
 {
@@ -53,8 +54,11 @@ private:
   
 	Player m_player;
   
-	thor::Animator<sf::Sprite, int> m_animator;
+
+	std::vector<std::unique_ptr<thor::Animator<sf::Sprite, int>>> m_animators;
 	
+	std::vector<std::unique_ptr<thor::FrameAnimation>> m_animations;
+
 };
 
 #endif // !GAME

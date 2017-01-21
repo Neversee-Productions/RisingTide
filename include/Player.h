@@ -33,9 +33,15 @@ public:
 		Ground, Jump, Fall
 	};
 
+	enum class AnimState
+	{
+		Idle, Run, JumpStart, JumpLoop, FallStart, FallLoop
+	};
+
 private:
 	void processInput();
-
+	void trackAnimStates();
+	void lateralMovement(float num);
 	// movement CONSTANTS
 	sf::Vector2f const JUMP_FORCE = sf::Vector2f(0.0f, -8.0f);
 
@@ -54,7 +60,7 @@ private:
 	sf::Sprite m_sprite;
 
 	PlayerState m_playerState;
-
+	AnimState m_animState;
 	// gravity in units
 	float m_gravity;
 };
