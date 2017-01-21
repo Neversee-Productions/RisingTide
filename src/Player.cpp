@@ -27,7 +27,7 @@ float const Player::GRAVITY = (9.81f);
 /// Default constructor
 /// </summary>
 Player::Player()
-	: m_coefficientOfFriction(0.3f)
+	: m_coefficientOfFriction(0.98f)
 	, m_force(0)
 	, m_maxForce(300)
 	, m_forceIncrement(8)
@@ -43,7 +43,7 @@ Player::Player()
 
 
 Player::Player(sf::Vector2f const & pos)
-	: m_coefficientOfFriction(0.3f)
+	: m_coefficientOfFriction(0.98f)
 	, m_force(0)
 	, m_maxForce(300)
 	, m_forceIncrement(8)
@@ -71,14 +71,15 @@ Player::~Player()
 void Player::update(const double & dt)
 {
 	/* SEB */
+
+	//acceleration = -coeffFriction*g*unitVelocity
+	m_acceleration.x = -m_coefficientOfFriction * m_gravity * getUnitVector(m_velocity).x;
+
 	
-	m_velocity = (sf::Vector2f(m_force * 1.5, m_velocity.y));
 	//Velocity = Velocity + acceleration* time
 	m_velocity.x += m_acceleration.x * dt;
 	//Position = Position + Velocity* time + 0.5*acceleration*(time)2
 	m_position.x += m_velocity.x * dt + (0.5f * m_acceleration.x * (dt * dt));
-	//acceleration = -coeffFriction*g*unitVelocity
-	m_acceleration.x = -m_coefficientOfFriction * GRAVITY * getUnitVector(m_velocity).x;
 	
 	/*-------------------------------------------------------------*/
 	
@@ -94,13 +95,13 @@ void Player::update(const double & dt)
 	case Player::PlayerState::Jump:
 		m_velocity.y += m_gravity * dt;
 		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
-
 		if (m_velocity.y >= 1.0f)
 		{
 			m_playerState = PlayerState::Fall;
 		}
 		break;
 	case Player::PlayerState::Fall:
+
 		break;
 	default:
 		break;
@@ -150,7 +151,7 @@ void Player::processInput()
 	switch (m_playerState)
 	{
 	case Player::PlayerState::Ground:
-		lateralMovement(1);
+		lateralMovement(1.0f);
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
 			m_velocity.y += JUMP_FORCE.y * PIXEL_TO_UNIT;
@@ -230,6 +231,7 @@ void Player::trackAnimStates()
 
 void Player::lateralMovement(float num)
 {
+	bool pressed = false;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
 		if (m_force < m_maxForce && m_force < 0)
@@ -240,6 +242,7 @@ void Player::lateralMovement(float num)
 		{
 			m_force += m_forceIncrement * num;
 		}
+		pressed = true;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
@@ -254,9 +257,11 @@ void Player::lateralMovement(float num)
 				m_force -= m_forceIncrement * num;
 			}
 		}
+		pressed = true;
 	}
 	else
 	{
+		/*
 		if (m_force > 0.0f && m_velocity.y == 0.0f)
 		{
 			m_force -= m_forceIncrement;
@@ -265,6 +270,12 @@ void Player::lateralMovement(float num)
 		{
 			m_force += m_forceIncrement;
 		}
+		/**/
+		m_force = 0.0f;
+	}
+	if (pressed)
+	{
+		m_velocity = (sf::Vector2f(m_force * 1.5, m_velocity.y));
 	}
 }
 	
