@@ -24,6 +24,8 @@ Game::Game()
 	loadTexture(m_floorTexture, ".\\resources\\platform\\floor.png");
 
 	m_floor.reset(new Platform(m_floorTexture, FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y));
+
+	loadAnimTextures();
 }
 
 /// Default destructor
@@ -161,4 +163,30 @@ void Game::checkcollision(Player & player, Platform & platform)
 			player.land(platformBox.top + LANDING_OFFSET, TIME_PER_UPDATE.asSeconds());
 		}
 	}
+}
+
+void Game::loadAnimTextures()
+{
+	Player::TextureCollection m_textMap;
+	sf::Texture texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_idle.png");
+	m_textMap[Player::AnimState::Idle] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_running.png");
+	m_textMap[Player::AnimState::Run] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_jump_start.png");
+	m_textMap[Player::AnimState::JumpStart] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_jump_loop.png");
+	m_textMap[Player::AnimState::JumpLoop] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_fall_start.png");
+	m_textMap[Player::AnimState::FallStart] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_fall_loop.png");
+	m_textMap[Player::AnimState::FallLoop] = texture;
+
+	m_player.addAnimTextures(m_textMap);
 }
