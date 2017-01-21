@@ -33,9 +33,19 @@ public:
 		Ground, Jump, Fall
 	};
 
+	enum class AnimState
+	{
+		Idle, Run, JumpStart, JumpLoop, FallStart, FallLoop
+	};
+	PlayerState getPlayerState() const;
+	sf::FloatRect getBounds() const;
+
+	void land(const float &, const double &);
+
 private:
 	void processInput();
-
+	void trackAnimStates();
+	void lateralMovement(float num);
 	// movement CONSTANTS
 	sf::Vector2f const JUMP_FORCE = sf::Vector2f(0.0f, -8.0f);
 
@@ -43,18 +53,20 @@ private:
 	sf::Vector2f const SIZE = sf::Vector2f(21.0f, 64.0f);
 
 	// pixel to Unit conversion
-	const float PIXEL_TO_UNIT = 30.0f;
+	const float PIXEL_TO_UNIT = 100.0f;
 
 	// movement vectors
+public:
 	sf::Vector2f m_position;
 	sf::Vector2f m_velocity;
+private:
 	sf::Vector2f m_acceleration;
 
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
 
 	PlayerState m_playerState;
-
+	AnimState m_animState;
 	// gravity in units
 	float m_gravity;
 };

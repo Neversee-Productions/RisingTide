@@ -6,6 +6,8 @@
 // Thor Libraries
 #include "Thor\Animations.hpp"
 
+#include <memory>
+
 // Game libraries
 #include <string>
 #include "Player.h"
@@ -27,13 +29,24 @@ private:
 	bool spawnNextPlatfrom();
 	void removePlatfrom();
 
+	void checkcollision();
+	void checkcollision(Player & player, Platform & platform);
+
 	//---------CONSTANTS---------///**/
 	
 	// Frames-per-second
 	sf::Time const TIME_PER_UPDATE = sf::seconds(1 / 60.0f);
 
 	// Player Start pos
-	sf::Vector2f const START_POS = sf::Vector2f(400.0f, 300.0f);
+	sf::Vector2f const START_POS = sf::Vector2f(400.0f, 200.0f);
+
+	// floor start pos
+	sf::Vector2f const FLOOR_POS = sf::Vector2f(0.0f, 210.0f);
+	// floor size
+	sf::Vector2f const FLOOR_SIZE = sf::Vector2f(800.0f, 200.0f);
+
+	// landing offset
+	float const LANDING_OFFSET = -10.0f;
 
 	// Main Game window
 	sf::RenderWindow m_window;
@@ -49,17 +62,24 @@ private:
 
 	// platform instance
 	std::vector<std::unique_ptr<Platform>> m_platforms;
-  
-	Player m_player;
-  
-	thor::Animator<sf::Sprite, int> m_animator;
 
 	// Loading texture from file
 	void loadTexture(sf::Texture&, std::string);
 
 	//
 	sf::Texture m_platformTexture;
+	sf::Time m_platformElapsedTime;
+	sf::Clock m_platformElapsedClock;
+  
+	Player m_player;
+
+	std::vector<std::unique_ptr<thor::Animator<sf::Sprite, int>>> m_animators;
 	
+	std::vector<std::unique_ptr<thor::FrameAnimation>> m_animations;
+	
+	// floor
+	Platform m_floor;
+
 };
 
 #endif // !GAME

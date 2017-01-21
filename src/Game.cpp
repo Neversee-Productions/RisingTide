@@ -6,6 +6,7 @@ Game::Game()
 	, m_clock()
 	, m_elapsed()
 	, m_player(START_POS)
+	, m_floor(FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y)
 {
 	srand(time(NULL));
 
@@ -69,11 +70,16 @@ void Game::update(sf::Time const & dt)
 	if (spawnNextPlatfrom());
 	removePlatfrom();
 	for (std::unique_ptr<Platform>& plat : m_platforms)
+
 	{
 		plat->update(dt);
 	}
-  
+
 	m_player.update(dt.asSeconds());
+
+	m_floor.update(dt);
+
+	checkcollision();
 }
 
 /// Main rendering loop
@@ -84,8 +90,11 @@ void Game::render()
 	{
 		plat->draw(m_window);
 	}
-    m_player.draw(m_window);
   
+	m_player.draw(m_window);
+
+	m_floor.draw(m_window);
+
 	m_window.display();
 }
 
@@ -118,5 +127,37 @@ void Game::loadTexture(sf::Texture& texture, std::string file)
 	{
 		std::string s("Error loading texture");
 		throw std::exception(s.c_str());
+	}
+}
+
+/// <summary>
+/// Check collisions between all game elements
+/// </summary>
+void Game::checkcollision()
+{
+	for (auto & platform : m_platforms)
+	{
+		checkcollision(m_player, platform);
+	}
+	checkcollision(m_player, m_floor);
+}
+
+void Game::checkcollision(Player & player, Platform & platform)
+{
+	sf::FloatRect playerBox, platformBox;
+	playerBox = player.getBounds();
+	platformBox = platform.getBounds();
+
+	if (player.m_velocity.y > 0.0f)
+	{
+		if (
+			platformBox.top < playerBox.top + playerBox.height + LANDING_OFFSET &&
+			platformBox.top + platformBox.height > playerBox.top + playerBox.height + LANDING_OFFSET &&
+			platformBox.left < playerBox.left + playerBox.width &&
+			platformBox.left + platformBox.width > playerBox.left
+			)
+		{
+			player.land(platformBox.top + LANDING_OFFSET, TIME_PER_UPDATE.asSeconds());
+		}
 	}
 }

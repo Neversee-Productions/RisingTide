@@ -1,6 +1,5 @@
 #include "Player.h"
-
-
+#include <iostream>
 
 /// <summary>
 /// Gets unit vector using the formula (the vector divided by its length)
@@ -83,7 +82,11 @@ void Player::update(const double & dt)
 	
 	/*-------------------------------------------------------------*/
 	
+	m_velocity.y += m_gravity * dt;
+	m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
+
 	processInput();
+	trackAnimStates();
 	switch (m_playerState)
 	{
 	case Player::PlayerState::Ground:
@@ -92,19 +95,17 @@ void Player::update(const double & dt)
 		m_velocity.y += m_gravity * dt;
 		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
 
-		if (m_velocity.y <= -1.0f * dt)
+		if (m_velocity.y >= 1.0f)
 		{
 			m_playerState = PlayerState::Fall;
 		}
 		break;
 	case Player::PlayerState::Fall:
-		m_velocity.y += m_gravity * dt;
-		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
-
 		break;
 	default:
 		break;
 	}
+	
 	m_sprite.setPosition(m_position);
 }
 
@@ -149,42 +150,7 @@ void Player::processInput()
 	switch (m_playerState)
 	{
 	case Player::PlayerState::Ground:
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		{
-			if (m_force < m_maxForce && m_force < 0)
-			{
-				m_force += (m_forceIncrement * 2);
-			}
-			else if (m_force < m_maxForce)
-			{
-				m_force += m_forceIncrement;
-			}
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		{
-			if (m_force > -m_maxForce && m_force > 0)
-			{
-				m_force -= (m_forceIncrement * 2);
-			}
-			else
-			{
-				if (m_force > -m_maxForce)
-				{
-					m_force -= m_forceIncrement;
-				}
-			}
-		}
-		else
-		{
-			if (m_force > 0)
-			{
-				m_force -= m_forceIncrement;
-			}
-			else if (m_force < 0)
-			{
-				m_force += m_forceIncrement;
-			}
-		}
+		lateralMovement(1);
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
 			m_velocity.y += JUMP_FORCE.y * PIXEL_TO_UNIT;
@@ -192,10 +158,127 @@ void Player::processInput()
 		}
 		break;
 	case Player::PlayerState::Jump:
+		lateralMovement(0.7f);
 		break;
 	case Player::PlayerState::Fall:
+		lateralMovement(0.7f);
 		break;
 	default:
 		break;
 	}
+}
+
+void Player::trackAnimStates()
+{
+	switch (m_playerState)
+	{
+	case Player::PlayerState::Ground:
+		if (m_velocity.x != 0)
+		{
+			m_animState = AnimState::Run;
+		}
+		else
+		{
+			m_animState = AnimState::Idle;
+		}
+		break;
+	case Player::PlayerState::Jump:
+		if (m_animState == AnimState::Idle || m_animState == AnimState::Run)
+		{
+			m_animState = AnimState::JumpStart;
+		}
+		else if(m_animState == AnimState::JumpStart)
+		{
+			m_animState = AnimState::JumpLoop;
+		}
+		else if (m_velocity.y >= 0)
+		{
+			m_animState = AnimState::FallStart;
+		}
+		break;
+	case Player::PlayerState::Fall:
+		if (m_animState == AnimState::FallStart)
+		{
+			m_animState = AnimState::FallLoop;
+		}
+		else if (m_velocity.y == 0.0f)
+		{
+			m_animState = AnimState::Idle;
+		}
+		break;
+	default:
+		break;
+	}
+	switch (m_animState)
+	{
+	case Player::AnimState::Idle:
+		break;
+	case Player::AnimState::Run:
+		break;
+	case Player::AnimState::JumpStart:
+		break;
+	case Player::AnimState::JumpLoop:
+		break;
+	case Player::AnimState::FallStart:
+		break;
+	case Player::AnimState::FallLoop:
+		break;
+	default:
+		break;
+	}
+}
+
+void Player::lateralMovement(float num)
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		if (m_force < m_maxForce && m_force < 0)
+		{
+			m_force += (m_forceIncrement * 2 * num);
+		}
+		else if (m_force < m_maxForce)
+		{
+			m_force += m_forceIncrement * num;
+		}
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		if (m_force > -m_maxForce && m_force > 0)
+		{
+			m_force -= (m_forceIncrement * 2 * num);
+		}
+		else
+		{
+			if (m_force > -m_maxForce)
+			{
+				m_force -= m_forceIncrement * num;
+			}
+		}
+	}
+	else
+	{
+		if (m_force > 0.0f && m_velocity.y == 0.0f)
+		{
+			m_force -= m_forceIncrement;
+		}
+		else if (m_force < 0.0f && m_velocity.y == 0.0f)
+		{
+			m_force += m_forceIncrement;
+		}
+	}
+	
+Player::PlayerState Player::getPlayerState() const
+{
+	return m_playerState;
+}
+
+sf::FloatRect Player::getBounds() const
+{
+	return m_sprite.getGlobalBounds();
+}
+
+void Player::land(const float & landHeight, const double & dt)
+{
+	m_playerState = PlayerState::Ground;
+	m_velocity.y = (landHeight - m_sprite.getGlobalBounds().height) * dt;
 }
