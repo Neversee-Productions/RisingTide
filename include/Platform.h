@@ -5,26 +5,34 @@
 class Platform
 {
 public:
-	Platform();
+	Platform(sf::Texture texture);
 	~Platform();
 
 	void draw(sf::RenderWindow& window);
 	void update(const sf::Time& dt);
 
 	float m_fallSpeed = 1.7f; /*speed of platforms*/
-	bool offScreen();
+	bool getOffScreen(sf::RenderWindow& window);
+	bool getNextPlatform();
 
 private: 
+
+	void initSprite(sf::Vector2f& pos);
 	sf::Vector2f m_position; /*Position of the rectangle*/
 
-	sf::RectangleShape m_rectangle;
-	const float SIZE = 150.0f; /*Block will alsways be 20 and expand*/
 
 	float m_offset; /*change size of Platform*/
 	float m_randX;  /*random spawingin on x axis*/
 
 	sf::Time time;
 	const sf::Time PLATFORM_SPAWN_TIME = sf::seconds(1.7f);
+
+	bool m_nextPlatform = false;
+	bool m_offScreen = false;
+
+
+	sf::Sprite m_sprite;
+	sf::Texture m_texture;
 
 };
 

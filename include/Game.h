@@ -10,6 +10,7 @@
 #include <string>
 #include "Player.h"
 #include "Platform.h"
+#include <memory>
 
 class Game
 {
@@ -47,13 +48,17 @@ private:
 	float m_accumulatedTime = 0;
 
 	// platform instance
-	std::vector<Platform> platform;
-	sf::Time m_platformElapsedTime;
-	sf::Clock m_platformElapsedClock;
+	std::vector<std::unique_ptr<Platform>> m_platforms;
   
 	Player m_player;
   
 	thor::Animator<sf::Sprite, int> m_animator;
+
+	// Loading texture from file
+	void loadTexture(sf::Texture&, std::string);
+
+	//
+	sf::Texture m_platformTexture;
 	
 };
 

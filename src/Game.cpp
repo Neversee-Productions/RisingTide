@@ -9,7 +9,9 @@ Game::Game()
 {
 	srand(time(NULL));
 
-	platform.push_back(Platform());
+	std::unique_ptr<Platform> platform;
+	platform.reset(new Platform(m_platformTexture));
+	m_platforms.push_back(std::move(platform));
 
 	if (!m_player.loadTexture(".\\resources\\player\\player.png"))
 	{
@@ -18,6 +20,8 @@ Game::Game()
 		s += ") was not loaded";
 		throw std::exception(s.c_str());
 	}
+	loadTexture(m_platformTexture, ".\\resources\\platform\\platform.png");
+
 }
 
 /// Default destructor
@@ -39,7 +43,6 @@ void Game::run()
 			update(TIME_PER_UPDATE);
 		}
 		render();
-
 	}
 }
 
@@ -58,19 +61,16 @@ void Game::proccessEvents()
 			break;
 		}
 	}
-	
 }
 
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
-	while (spawnNextPlatfrom())
+	if (spawnNextPlatfrom());
+	removePlatfrom();
+	for (std::unique_ptr<Platform>& plat : m_platforms)
 	{
-		platform.push_back(Platform());
-	}
-	for (auto& plat : platform)
-	{
-		plat.update(dt);
+		plat->update(dt);
 	}
   
 	m_player.update(dt.asSeconds());
@@ -80,29 +80,43 @@ void Game::update(sf::Time const & dt)
 void Game::render()
 {
 	m_window.clear();
-	for (Platform& plat : platform)
+	for (std::unique_ptr<Platform>& plat : m_platforms)
 	{
-		plat.draw(m_window);
+		plat->draw(m_window);
 	}
-  m_player.draw(m_window);
+    m_player.draw(m_window);
   
 	m_window.display();
 }
 
+/// Spawn a platform after a set amount of time
 bool Game::spawnNextPlatfrom()
 {
-	m_platformElapsedTime = m_platformElapsedClock.restart();
-	m_accumulatedTime += m_platformElapsedTime.asSeconds();
-	if (m_accumulatedTime > 1.5)
+	std::unique_ptr<Platform> platform;
+	platform.reset(new Platform(m_platformTexture));
+
+	if (m_platforms.back()->getNextPlatform())
 	{
-		m_accumulatedTime = 0;
-		return true;
+		m_platforms.push_back(std::move(platform));
 	}
 	
 	return false;
 }
 
+/// Remove a platfrom when it reaches the end of the screen
 void Game::removePlatfrom()
 {
-	
+	if(m_platforms.front()->getOffScreen(m_window))
+	{
+		m_platforms.erase(m_platforms.begin());
+	}
+}
+
+void Game::loadTexture(sf::Texture& texture, std::string file)
+{
+	if (!texture.loadFromFile(file))
+	{
+		std::string s("Error loading texture");
+		throw std::exception(s.c_str());
+	}
 }
