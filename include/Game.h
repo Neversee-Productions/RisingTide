@@ -12,6 +12,7 @@
 #include <string>
 #include "Player.h"
 #include "Platform.h"
+#include <memory>
 
 class Game
 {
@@ -65,6 +66,10 @@ private:
 	sf::Clock m_platformElapsedClock;
   
 	Player m_player;
+
+	std::vector<std::unique_ptr<thor::Animator<sf::Sprite, int>>> m_animators;
+	
+	std::vector<std::unique_ptr<thor::FrameAnimation>> m_animations;
 	
 	// floor
 	Platform m_floor;
