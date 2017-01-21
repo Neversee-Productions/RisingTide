@@ -26,7 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.h" />
-    <ClInclude Include="include\KeyHandler.h" />
     <ClInclude Include="include\Player.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

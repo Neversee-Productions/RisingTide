@@ -3,11 +3,20 @@
 
 // player includes
 #include "SFML\Graphics.hpp"
+#include <math.h>
 
 class Player
 {
 public:
 	Player();
+	sf::Vector2f getUnitVector(sf::Vector2f);
+	sf::RectangleShape m_rectangle;
+	float m_acceleration;
+	float m_coefficientOfFriction;
+	float m_force;
+	float m_maxForce;
+	float m_forceIncrement;
+
 	Player(sf::Vector2f const &);
 
 	~Player();

@@ -61,7 +61,7 @@ void Game::proccessEvents()
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
-
+  
 	m_player.update(dt.asSeconds());
 }
 

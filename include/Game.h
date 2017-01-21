@@ -38,7 +38,7 @@ private:
 
 	// tracks time between frames
 	sf::Time m_elapsed;
-
+  
 	// player
 	Player m_player;
 
