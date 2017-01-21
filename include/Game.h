@@ -10,6 +10,8 @@
 // Game libraries
 #include <string>
 
+#include "Platform.h"
+
 class Game
 {
 public:
@@ -21,6 +23,9 @@ private:
 	void proccessEvents();
 	void update(sf::Time const &);
 	void render();
+
+	bool spawnNextPlatfrom();
+	void removePlatfrom();
 
 	//---------CONSTANTS---------///**/
 	
@@ -38,6 +43,14 @@ private:
 
 	// tracks time between frames
 	sf::Time m_elapsed;
+
+
+	float m_accumulatedTime = 0;
+
+	// platform instance
+	std::vector<Platform> platform;
+	sf::Time m_platformElapsedTime;
+	sf::Clock m_platformElapsedClock;
   
 	Player m_player;
   
