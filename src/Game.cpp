@@ -5,7 +5,16 @@ Game::Game()
 	: m_window(sf::VideoMode(800u, 600u, 32u), "Rising Tide", sf::Style::Default)
 	, m_clock()
 	, m_elapsed()
+	, m_player(START_POS)
 {
+
+	if (!m_player.loadTexture(".\\resources\\player\\player.png"))
+	{
+		std::string s("Error player texture (");
+		s += ".\\resources\\player\\player.png";
+		s += ") was not loaded";
+		throw std::exception(s.c_str());
+	}
 }
 
 /// Default destructor
@@ -60,10 +69,7 @@ void Game::render()
 {
 	m_window.clear();
 
-	sf::CircleShape circle(10.0f, 30u);
-
-	circle.setPosition(sf::Vector2f(10.0f, 10.0f));
-	m_window.draw(circle);
 	m_player.draw(m_window);
+
 	m_window.display();
 }
