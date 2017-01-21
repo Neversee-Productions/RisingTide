@@ -6,7 +6,6 @@ Game::Game()
 	, m_clock()
 	, m_elapsed()
 	, m_player(START_POS)
-	, m_floor(FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y)
 {
 	srand(time(NULL));
 
@@ -22,7 +21,9 @@ Game::Game()
 		throw std::exception(s.c_str());
 	}
 	loadTexture(m_platformTexture, ".\\resources\\platform\\platform.png");
+	loadTexture(m_floorTexture, ".\\resources\\platform\\floor.png");
 
+	m_floor.reset(new Platform(m_floorTexture, FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y));
 }
 
 /// Default destructor
@@ -77,7 +78,7 @@ void Game::update(sf::Time const & dt)
 
 	m_player.update(dt.asSeconds());
 
-	m_floor.update(dt);
+	m_floor->update(dt);
 
 	checkcollision();
 }
@@ -93,7 +94,7 @@ void Game::render()
   
 	m_player.draw(m_window);
 
-	m_floor.draw(m_window);
+	m_floor->draw(m_window);
 
 	m_window.display();
 }
@@ -137,9 +138,9 @@ void Game::checkcollision()
 {
 	for (auto & platform : m_platforms)
 	{
-		checkcollision(m_player, platform);
+		checkcollision(m_player, *platform);
 	}
-	checkcollision(m_player, m_floor);
+	checkcollision(m_player, *m_floor);
 }
 
 void Game::checkcollision(Player & player, Platform & platform)

@@ -266,6 +266,7 @@ void Player::lateralMovement(float num)
 			m_force += m_forceIncrement;
 		}
 	}
+}
 	
 Player::PlayerState Player::getPlayerState() const
 {

@@ -6,8 +6,7 @@ class Platform
 {
 public:
 	Platform(sf::Texture texture);
-	Platform();
-	Platform(float, float, float, float);
+	Platform(sf::Texture, float, float, float, float);
 
 	~Platform();
 
@@ -21,9 +20,6 @@ public:
 private: 
 
 	void initSprite(sf::Vector2f& pos);
-	sf::Vector2f m_position; /*Position of the rectangle*/
-	
-private:
 	sf::Vector2f m_position; /*Position of the rectangle*/
 
 	float m_offset; /*change size of Platform*/

@@ -6,19 +6,20 @@ Platform::Platform(sf::Texture texture):
 {
 	m_offset = rand() % 10 +1;
 	m_randX = rand() % 500 + 100;
-	m_position = sf::Vector2f(m_randX,0);
+	m_position = sf::Vector2f(m_randX, -10.0f);
 
 	initSprite(m_position);
 }
 
 
-Platform::Platform(float x, float y, float width, float height)
+Platform::Platform(sf::Texture texture, float x, float y, float width, float height)
 	: m_position(x, y)
+	, m_texture(texture)
 {
 	m_offset = 0.0f;
 	m_randX = 0.0f;
-	m_rectangle.setSize(sf::Vector2f(width, height));
-	m_rectangle.setPosition(m_position);
+	m_sprite.setPosition(m_position);
+	m_sprite.setTexture(m_texture);
 }
 
 
@@ -66,7 +67,7 @@ void Platform::initSprite(sf::Vector2f & pos)
 }
 sf::FloatRect Platform::getBounds() const
 {
-	sf::FloatRect rect = m_rectangle.getGlobalBounds();
+	sf::FloatRect rect = m_sprite.getGlobalBounds();
 	rect.left = m_position.x;
 	rect.top = m_position.y;
 	return rect;

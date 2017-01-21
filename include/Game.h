@@ -6,8 +6,6 @@
 // Thor Libraries
 #include "Thor\Animations.hpp"
 
-#include <memory>
-
 // Game libraries
 #include <string>
 #include "Player.h"
@@ -38,10 +36,10 @@ private:
 	sf::Time const TIME_PER_UPDATE = sf::seconds(1 / 60.0f);
 
 	// Player Start pos
-	sf::Vector2f const START_POS = sf::Vector2f(400.0f, 200.0f);
+	sf::Vector2f const START_POS = sf::Vector2f(400.0f, 100.0f);
 
 	// floor start pos
-	sf::Vector2f const FLOOR_POS = sf::Vector2f(0.0f, 210.0f);
+	sf::Vector2f const FLOOR_POS = sf::Vector2f(-50.0f, 110.0f);
 	// floor size
 	sf::Vector2f const FLOOR_SIZE = sf::Vector2f(800.0f, 200.0f);
 
@@ -68,8 +66,7 @@ private:
 
 	//
 	sf::Texture m_platformTexture;
-	sf::Time m_platformElapsedTime;
-	sf::Clock m_platformElapsedClock;
+	sf::Texture m_floorTexture;
   
 	Player m_player;
 
@@ -78,7 +75,7 @@ private:
 	std::vector<std::unique_ptr<thor::FrameAnimation>> m_animations;
 	
 	// floor
-	Platform m_floor;
+	std::unique_ptr<Platform> m_floor;
 
 };
 
