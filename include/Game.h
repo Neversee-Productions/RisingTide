@@ -31,6 +31,8 @@ private:
 	void checkcollision();
 	void checkcollision(Player & player, Platform & platform);
 
+	void loadAnimTextures();
+
 	//---------CONSTANTS---------///**/
 	
 	// Frames-per-second
@@ -74,6 +76,8 @@ private:
 
 	std::vector<std::unique_ptr<thor::Animator<sf::Sprite, int>>> m_animators;
 	
+	std::unique_ptr<Player::TextureCollection> m_animTextures;
+
 	std::vector<std::unique_ptr<thor::FrameAnimation>> m_animations;
 	
 	thor::Animator<sf::Sprite,int> m_waveAnimator;
