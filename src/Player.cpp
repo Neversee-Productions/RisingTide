@@ -28,8 +28,7 @@ float const Player::GRAVITY = (9.81f);
 /// Default constructor
 /// </summary>
 Player::Player()
-	: m_rectangle(sf::Vector2f(30.0f, 30.0f))
-	, m_coefficientOfFriction(0.3f)
+	: m_coefficientOfFriction(0.3f)
 	, m_force(0)
 	, m_maxForce(300)
 	, m_forceIncrement(8)
@@ -41,13 +40,11 @@ Player::Player()
 	, m_playerState(PlayerState::Ground)
 	, m_gravity(GRAVITY * PIXEL_TO_UNIT)
 {
-		m_rectangle.setPosition(sf::Vector2f(400.0f, 300.0f));
 }
 
 
 Player::Player(sf::Vector2f const & pos)
-	: m_rectangle(sf::Vector2f(30.0f, 30.0f))
-	, m_coefficientOfFriction(0.3f)
+	: m_coefficientOfFriction(0.3f)
 	, m_force(0)
 	, m_maxForce(300)
 	, m_forceIncrement(8)
@@ -76,49 +73,13 @@ void Player::update(const double & dt)
 {
 	/* SEB */
 	
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-	{
-		if (m_force < m_maxForce && m_force < 0)
-		{
-			m_force += (m_forceIncrement * 2);
-		}
-		else if (m_force < m_maxForce)
-		{
-			m_force += m_forceIncrement;
-		}
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-	{
-		if (m_force > -m_maxForce && m_force > 0)
-		{
-			m_force -= (m_forceIncrement * 2);
-		}
-		else
-		{
-			if (m_force > -m_maxForce)
-			{
-				m_force -= m_forceIncrement;
-			}
-		}
-	}
-	else
-	{
-		if (m_force > 0)
-		{
-			m_force -= m_forceIncrement;
-		}
-		else if (m_force < 0)
-		{
-			m_force += m_forceIncrement;
-		}
-	}
 	m_velocity = (sf::Vector2f(m_force * 1.5, m_velocity.y));
-	//acceleration = -coeffFriction*g*unitVelocity
-	m_acceleration = -m_coefficientOfFriction * GRAVITY * getUnitVector(m_velocity).x;
 	//Velocity = Velocity + acceleration* time
-	m_velocity.x += m_acceleration * dt;
+	m_velocity.x += m_acceleration.x * dt;
 	//Position = Position + Velocity* time + 0.5*acceleration*(time)2
-	m_rectangle.setPosition(m_position.x += m_velocity.x * dt + (0.5 * m_acceleration * (dt * dt)), m_rectangle.getPosition().y);
+	m_position.x += m_velocity.x * dt + (0.5f * m_acceleration.x * (dt * dt));
+	//acceleration = -coeffFriction*g*unitVelocity
+	m_acceleration.x = -m_coefficientOfFriction * GRAVITY * getUnitVector(m_velocity).x;
 	
 	/*-------------------------------------------------------------*/
 	
@@ -188,6 +149,42 @@ void Player::processInput()
 	switch (m_playerState)
 	{
 	case Player::PlayerState::Ground:
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		{
+			if (m_force < m_maxForce && m_force < 0)
+			{
+				m_force += (m_forceIncrement * 2);
+			}
+			else if (m_force < m_maxForce)
+			{
+				m_force += m_forceIncrement;
+			}
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		{
+			if (m_force > -m_maxForce && m_force > 0)
+			{
+				m_force -= (m_forceIncrement * 2);
+			}
+			else
+			{
+				if (m_force > -m_maxForce)
+				{
+					m_force -= m_forceIncrement;
+				}
+			}
+		}
+		else
+		{
+			if (m_force > 0)
+			{
+				m_force -= m_forceIncrement;
+			}
+			else if (m_force < 0)
+			{
+				m_force += m_forceIncrement;
+			}
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
 			m_velocity.y += JUMP_FORCE.y * PIXEL_TO_UNIT;

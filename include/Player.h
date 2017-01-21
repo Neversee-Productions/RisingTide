@@ -10,25 +10,15 @@ class Player
 {
 public:
 	Player();
-	void draw(sf::RenderWindow&);
-	void update(double);
-	sf::Vector2f getUnitVector(sf::Vector2f);
-	~Player();
-	sf::RectangleShape m_rectangle;
-	static float const GRAVITY;
-	sf::Vector2f m_position;
-	sf::Vector2f m_velocity;
+	Player(sf::Vector2f const &);
 
-	float m_acceleration;
+	
+	sf::Vector2f getUnitVector(sf::Vector2f);
+
 	float m_coefficientOfFriction;
 	float m_force;
 	float m_maxForce;
 	float m_forceIncrement;
-
-};
-
-
-	Player(sf::Vector2f const &);
 
 	~Player();
 
@@ -43,7 +33,6 @@ public:
 	{
 		Ground, Jump, Fall
 	};
-
 
 private:
 	void processInput();
