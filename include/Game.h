@@ -58,7 +58,7 @@ private:
 	float const HIT_WALL_OFFSET = 35.0f;
 
 	// death line
-	float const DEATH_HEIGHT = 500.0f;
+	float const DEATH_HEIGHT = 600.0f;
 
 	// Main Game window
 	sf::RenderWindow m_window;

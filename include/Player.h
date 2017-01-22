@@ -38,6 +38,7 @@ public:
 	void draw(sf::RenderWindow &);
 
 	bool loadTexture(const sf::String &);
+	bool loadFont(const sf::String &);
 
 	void addAnimTextures(TextureCollection);
 	void addAnimRects(int, int, int, int);
@@ -130,6 +131,9 @@ private:
 
 	std::shared_ptr<Platform> m_standPlatformPrev;
 
+	sf::Font m_font;
+	sf::Text m_textBox;
+	sf::String TEXT = " M";
 };
 
 #endif // !PLAYER

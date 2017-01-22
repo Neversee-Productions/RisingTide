@@ -26,6 +26,12 @@ Game::Game()
 		s += ") was not loaded";
 		throw std::exception(s.c_str());
 	}
+
+	if (!m_player.loadFont(".\\resources\\fonts\\tahoma.ttf"))
+	{
+		std::string s("Error font not loaded");
+		throw std::exception(s.c_str());
+	}
 	
 
 	loadTexture(m_platformTexture, ".\\resources\\platform\\platform.png");
@@ -34,8 +40,6 @@ Game::Game()
 	m_floorTexture.setSmooth(true);
 
 	m_floor.reset(new Platform(m_floorTexture, FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y));
-
-	
 	
 
 	loadTexture(m_splashScreenTexture, ".\\resources\\backgrounds\\splash_screen.png");
@@ -61,7 +65,7 @@ Game::Game()
 	m_waveAnimator.playAnimation(0, true);
 
 	sf::Texture gameOverText;
-	loadTexture(gameOverText, ".\\resources\\backgrounds\\");
+	loadTexture(gameOverText, ".\\resources\\backgrounds\\game_over_screen.png");
 	m_gameOverScreen.reset(new GameOver(gameOverText));
 
 }
@@ -124,7 +128,7 @@ void Game::proccessEvents()
 				
 				m_music.play();
 				m_music.setLoop(true);
-				m_music.setVolume(5);
+				m_music.setVolume(15.0f);
 				if (!m_waveSound.openFromFile(".\\resources\\sounds\\WAVE2.wav"))
 				{
 					std::string s("Error player texture (");
@@ -134,7 +138,7 @@ void Game::proccessEvents()
 				}
 				m_waveSound.play();
 				m_waveSound.setLoop(true);
-				m_waveSound.setVolume(30);
+				m_waveSound.setVolume(50.0f);
 			}
 			break;
 		default:
@@ -282,6 +286,7 @@ void Game::checkcollision()
 	{
 		checkcollision(m_player, platform);
 	}
+	checkcollision(m_player);
 	checkcollision(m_player, m_floor);
 	checkcollision(m_player, m_cliffLeftSprite);
 	checkcollision(m_player, m_cliffRightSprite);
@@ -293,7 +298,7 @@ void Game::checkcollision(Player & player)
 	if (boxPlayer.top > DEATH_HEIGHT)
 	{
 		// player dies
-
+		m_gameState = GameState::GameOver;
 	}
 }
 

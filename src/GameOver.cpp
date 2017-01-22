@@ -12,7 +12,6 @@ GameOver::GameOver(sf::Texture texture)
 	m_spriteColour = sf::Color::White;
 	m_spriteColour.a = 0u;
 	m_sprite.setColor(m_spriteColour);
-	m_sprite.setScale(0.5f, 0.5f);
 	m_elapsed = sf::Time::Zero;
 	leave = false;
 }
@@ -38,9 +37,4 @@ bool GameOver::update(const sf::Time & dt)
 	}
 
 	return leave;
-}
-
-
-GameOver::~GameOver()
-{
 }

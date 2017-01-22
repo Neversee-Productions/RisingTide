@@ -39,10 +39,12 @@ Player::Player()
 	, m_animState(AnimState::Idle)
 	, m_gravity(GRAVITY * PIXEL_TO_UNIT)
 	, m_animator(thor::Animator<sf::Sprite, AnimState>())
+	, m_textBox()
 {
 	initSound();
 	initSprite();
 	m_standPlatform = nullptr;
+	m_textBox.setString("0" + TEXT);
 }
 
 
@@ -60,10 +62,12 @@ Player::Player(sf::Vector2f const & pos)
 	, m_animState(AnimState::Idle)
 	, m_gravity(GRAVITY * PIXEL_TO_UNIT)
 	, m_animator(thor::Animator<sf::Sprite, AnimState>())
+	, m_textBox()
 {
 	initSound();
 	initSprite();
 	m_standPlatform = nullptr;
+	m_textBox.setString("0" + TEXT);
 }
 
 /// <summary>
@@ -123,7 +127,7 @@ void Player::update(const double & dt)
 			m_standPlatformPrev->getBounds().top > m_standPlatform->getBounds().top)
 		{
 			m_heightTravelled += (m_positionPrev.y - m_position.y)* 0.01f;
-			std::cout << m_heightTravelled << std::endl;
+			m_textBox.setString(std::to_string(static_cast<int>(m_heightTravelled)) + TEXT);
 		}
 		break;
 	case Player::PlayerState::Fall:
@@ -145,6 +149,7 @@ void Player::update(const double & dt)
 /// <param name="window"> target draw window </param>
 void Player::draw(sf::RenderWindow & window)
 {
+	window.draw(m_textBox);
 	window.draw(m_sprite);
 }
 
@@ -169,6 +174,16 @@ bool Player::loadTexture(const sf::String & filePath)
 		m_sprite.setScale(m_sprite.getScale().x, SIZE.y);
 	}
 	
+	return loaded;
+}
+
+bool Player::loadFont(const sf::String & filePath)
+{
+	bool loaded = m_font.loadFromFile(filePath);
+
+	m_textBox.setFont(m_font);
+	m_textBox.setPosition(700.0f, 30.0f);
+
 	return loaded;
 }
 
