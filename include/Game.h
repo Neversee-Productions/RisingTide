@@ -30,8 +30,10 @@ private:
 
 	void checkcollision();
 	void checkcollision(Player & player, std::shared_ptr<Platform> & platform);
+	void checkcollision(Player & player, sf::Sprite & wall);
 
 	void loadAnimTextures();
+	void addAnimRects(int, int, int, int);
 
 	//---------CONSTANTS---------///**/
 	
@@ -48,6 +50,8 @@ private:
 
 	// landing offset
 	float const LANDING_OFFSET = -10.0f;
+	// hit wall offset
+	float const HIT_WALL_OFFSET = 35.0f;
 
 	// Main Game window
 	sf::RenderWindow m_window;
@@ -82,6 +86,9 @@ private:
 	
 	thor::Animator<sf::Sprite,int> m_waveAnimator;
 	thor::FrameAnimation m_waveAnimation;
+
+	// length of wave animation
+	sf::Time const WAVE_DUR = sf::seconds(1.8f);
 
 	sf::Sprite m_waveSprite;
 	sf::Texture m_waveTexture;

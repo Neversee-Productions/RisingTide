@@ -499,6 +499,25 @@ void Player::land(std::shared_ptr<Platform> & landPlatform, const double & dt)
 	m_position.y = m_standPlatform->getBounds().top - m_sprite.getGlobalBounds().height;
 }
 
+void Player::checkland()
+{
+	if (m_playerState == PlayerState::Ground && m_standPlatform != nullptr)
+	{
+		sf::FloatRect playerBox, standPlatform;
+		playerBox = m_sprite.getGlobalBounds();
+		standPlatform = m_standPlatform->getBounds();
+		
+		if (
+			playerBox.left + playerBox.width - LEDGE_BOX_OFFSET < standPlatform.left ||
+			playerBox.left + LEDGE_BOX_OFFSET > standPlatform.left + standPlatform.width
+			)
+		{
+			m_standPlatform = nullptr;
+			m_playerState = PlayerState::Fall;
+		}
+	}
+}
+
 void Player::initSprite()
 {
 	m_sprite.setScale(SCALE, SCALE);
@@ -535,4 +554,10 @@ void Player::adjustSprite()
 	{
 		m_sprite.setPosition(m_position.x + m_offset.x * (SCALE), m_position.y + m_offset.y);
 	}
+}
+
+void Player::wallBounce(const sf::FloatRect & wall)
+{
+	m_force = -(m_force*1.009f);
+	m_velocity = (sf::Vector2f(m_force * 1.5, m_velocity.y));
 }
