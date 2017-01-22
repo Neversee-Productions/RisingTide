@@ -1,5 +1,5 @@
 #include "Player.h"
-
+#include <iostream>
 /// <summary>
 /// Gets unit vector using the formula (the vector divided by its length)
 /// x = x / sqrt(x*x + y*y)
@@ -26,7 +26,7 @@ float const Player::GRAVITY = (9.81f);
 /// Default constructor
 /// </summary>
 Player::Player()
-	: m_coefficientOfFriction(0.98f)
+	: m_coefficientOfFriction(0.8f)
 	, m_force(0)
 	, m_maxForce(300)
 	, m_forceIncrement(8)
@@ -42,11 +42,12 @@ Player::Player()
 {
 	initSound();
 	initSprite();
+	m_standPlatform = nullptr;
 }
 
 
 Player::Player(sf::Vector2f const & pos)
-	: m_coefficientOfFriction(0.98f)
+	: m_coefficientOfFriction(0.8f)
 	, m_force(0)
 	, m_maxForce(300)
 	, m_forceIncrement(8)
@@ -62,6 +63,7 @@ Player::Player(sf::Vector2f const & pos)
 {
 	initSound();
 	initSprite();
+	m_standPlatform = nullptr;
 }
 
 /// <summary>
@@ -77,14 +79,10 @@ Player::~Player()
 /// <param name="dt"> delta time, time since last update </param>
 void Player::update(const double & dt)
 {
-	m_animator.update(sf::seconds(dt));
-	m_animator.animate(m_sprite);
-
 	/* SEB */
 
 	//acceleration = -coeffFriction*g*unitVelocity
 	m_acceleration.x = -m_coefficientOfFriction * m_gravity * getUnitVector(m_velocity).x;
-
 	
 	//Velocity = Velocity + acceleration* time
 	m_velocity.x += m_acceleration.x * dt;
@@ -92,17 +90,28 @@ void Player::update(const double & dt)
 	m_position.x += m_velocity.x * dt + (0.5f * m_acceleration.x * (dt * dt));
 	
 	/*-------------------------------------------------------------*/
-	
-	m_velocity.y += m_gravity * dt;
-	m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
 
 	processInput();
 	trackAnimStates();
+	m_animator.update(sf::seconds(dt));
+	m_animator.animate(m_sprite);
+	adjustSprite();
 	switch (m_playerState)
 	{
 	case Player::PlayerState::Ground:
+		if (m_standPlatform != nullptr)
+		{
+			m_velocity.y = 0.0f;
+			m_position.y = m_standPlatform->getBounds().top - (m_sprite.getGlobalBounds().height * (1.0f + SCALE));
+		}
+		else
+		{
+			m_playerState = PlayerState::Fall;
+		}
 		break;
 	case Player::PlayerState::Jump:
+		m_velocity.y += m_gravity * dt;
+		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
 		m_velocity.y += m_gravity * dt;
 		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
 		if (m_velocity.y >= 1.0f)
@@ -111,13 +120,16 @@ void Player::update(const double & dt)
 		}
 		break;
 	case Player::PlayerState::Fall:
-
+		m_velocity.y += m_gravity * dt;
+		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
+		m_velocity.y += m_gravity * dt;
+		m_position.y += m_velocity.y * dt + (0.5f * m_gravity * (dt*dt));
 		break;
 	default:
 		break;
 	}
 	
-	adjustSprite();
+
 }
 
 /// <summary>
@@ -243,102 +255,127 @@ void Player::trackAnimStates()
 	case Player::PlayerState::Ground:
 		if (m_velocity.x != 0)
 		{
-			m_animState = AnimState::Run;
-			if (m_animator.isPlayingAnimation())
+			if (m_animState != AnimState::Run)
 			{
-				m_animator.stopAnimation();
+				if (m_animator.isPlayingAnimation())
+				{
+					m_animator.stopAnimation();
+				}
+				m_animState = AnimState::Run;
+				m_sprite.setTexture(m_textureMap[m_animState]);
+				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
+				m_animator.playAnimation(m_animState, true);
 			}
-			m_sprite.setTexture(m_textureMap[m_animState]);
-			m_animator.playAnimation(m_animState, true);
 		}
 		else
 		{
-			m_animState = AnimState::Idle;
-			if (m_animator.isPlayingAnimation())
+			if (m_animState != AnimState::Idle)
 			{
-				m_animator.stopAnimation();
+				if (m_animator.isPlayingAnimation())
+				{
+					m_animator.stopAnimation();
+				}
+				m_animState = AnimState::Idle;
+				m_sprite.setTexture(m_textureMap[m_animState]);
+				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
+				m_animator.playAnimation(m_animState, true);
 			}
-			m_sprite.setTexture(m_textureMap[m_animState]);
-			m_animator.playAnimation(m_animState, true);
 		}
 		break;
 	case Player::PlayerState::Jump:
 		
 		if (m_animState == AnimState::Idle || m_animState == AnimState::Run)
 		{
-			m_animState = AnimState::JumpStart;
-			if (m_animator.isPlayingAnimation())
+			if (m_animState != AnimState::JumpStart)
 			{
-				m_animator.stopAnimation();
+				if (m_animator.isPlayingAnimation())
+				{
+					m_animator.stopAnimation();
+				}
+				m_animState = AnimState::JumpStart;
+				m_sprite.setTexture(m_textureMap[m_animState]);
+				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
+				m_animator.playAnimation(m_animState, false);
 			}
-			m_sprite.setTexture(m_textureMap[m_animState]);
-			m_animator.playAnimation(m_animState, false);
 		}
 		else if(m_animState == AnimState::JumpStart)
 		{
-			m_animState = AnimState::JumpLoop;
-			if (m_animator.isPlayingAnimation())
-			{
-				m_animator.stopAnimation();
-			}
-			m_sprite.setTexture(m_textureMap[m_animState]);
-			m_animator.playAnimation(m_animState, true);
-		}
-		else if (m_velocity.y >= 0)
-		{
-			m_animState = AnimState::FallStart;
-			if (m_animator.isPlayingAnimation())
-			{
-				m_animator.stopAnimation();
-			}
-			m_sprite.setTexture(m_textureMap[m_animState]);
-			m_animator.playAnimation(m_animState, false);
+				if (m_animator.isPlayingAnimation())
+				{
+					m_animator.stopAnimation();
+				}
+				m_animState = AnimState::JumpLoop;
+				m_sprite.setTexture(m_textureMap[m_animState]);
+				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
+				m_animator.playAnimation(m_animState, true);
+
 		}
 		break;
 	case Player::PlayerState::Fall:
+		if (m_velocity.y >= 0)
+		{
+			if (m_animState != AnimState::FallStart)
+			{
+				if (m_animator.isPlayingAnimation())
+				{
+					m_animator.stopAnimation();
+				}
+				m_animState = AnimState::FallStart;
+				m_sprite.setTexture(m_textureMap[m_animState]);
+				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
+				m_animator.playAnimation(m_animState, false);
+			}
+		}
 		if (m_animState == AnimState::FallStart)
 		{
-			m_animState = AnimState::FallLoop;
-			if (m_animator.isPlayingAnimation())
+			if (m_animState != AnimState::FallLoop)
 			{
-				m_animator.stopAnimation();
+				if (m_animator.isPlayingAnimation())
+				{
+					m_animator.stopAnimation();
+				}
+				m_animState = AnimState::FallLoop;
+				m_sprite.setTexture(m_textureMap[m_animState]);
+				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
+				m_animator.playAnimation(m_animState, true);
 			}
-			m_sprite.setTexture(m_textureMap[m_animState]);
-			m_animator.playAnimation(m_animState, true);
 		}
 		else if (m_velocity.y == 0.0f)
 		{
-			m_animState = AnimState::Idle;
-			if (m_animator.isPlayingAnimation())
+			if (m_animState != AnimState::Idle)
 			{
-				m_animator.stopAnimation();
+				if (m_animator.isPlayingAnimation())
+				{
+					m_animator.stopAnimation();
+				}
+				m_animState = AnimState::Idle;
+				m_sprite.setTexture(m_textureMap[m_animState]);
+				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
+				m_animator.playAnimation(m_animState, true);
 			}
-			m_sprite.setTexture(m_textureMap[m_animState]);
-			m_animator.playAnimation(m_animState, true);
 		}
 		break;
 	default:
 		break;
 	}
-
-	
-	switch (m_animState)
-	{
-	case Player::AnimState::Idle:
-		break;
-	case Player::AnimState::Run:
-		break;
-	case Player::AnimState::JumpStart:
-		break;
-	case Player::AnimState::JumpLoop:
-		break;
-	case Player::AnimState::FallStart:
-		break;
-	case Player::AnimState::FallLoop:
-		break;
-	default:
-		break;
-	}
+	std::cout << m_velocity.y << std::endl;
+	//switch (m_animState)
+	//{
+	//case Player::AnimState::Idle:
+	//	break;
+	//case Player::AnimState::Run:
+	//	break;
+	//case Player::AnimState::JumpStart:
+	//	break;
+	//case Player::AnimState::JumpLoop:
+	//	break;
+	//case Player::AnimState::FallStart:
+	//	break;
+	//case Player::AnimState::FallLoop:
+	//	break;
+	//default:
+	//	break;
+	//}
 }
 
 void Player::lateralMovement(float num)
@@ -384,6 +421,10 @@ void Player::lateralMovement(float num)
 		}
 		/**/
 		m_force = 0.0f;
+		if (m_velocity.x <= 10.0f && m_velocity.x >= -10.0f)
+		{
+			m_velocity.x = 0.0f;
+		}
 	}
 	if (pressed)
 	{
@@ -451,10 +492,11 @@ sf::FloatRect Player::getBounds() const
 	return m_sprite.getGlobalBounds();
 }
 
-void Player::land(const float & landHeight, const double & dt)
+void Player::land(std::shared_ptr<Platform> & landPlatform, const double & dt)
 {
+	m_standPlatform = std::shared_ptr<Platform>(landPlatform);
 	m_playerState = PlayerState::Ground;
-	m_velocity.y = (landHeight - m_sprite.getGlobalBounds().height) * dt;
+	m_position.y = m_standPlatform->getBounds().top - m_sprite.getGlobalBounds().height;
 }
 
 void Player::initSprite()
@@ -468,7 +510,7 @@ void Player::initSprite()
 
 void Player::adjustSprite()
 {
-	if (m_velocity.x < 0)
+	if (m_velocity.x < 0.0f)
 	{
 		m_sprite.setScale(-SCALE, SCALE);
 		m_offset.x = m_sprite.getGlobalBounds().width;
@@ -476,9 +518,9 @@ void Player::adjustSprite()
 		m_offset.y = m_sprite.getGlobalBounds().height;
 		m_offset.y /= 2.0f;
 		m_sprite.setOrigin(m_offset);
-		m_sprite.setPosition(m_position.x + m_offset.x, m_position.y + m_offset.y);
+		m_sprite.setPosition(m_position.x + m_offset.x * (SCALE), m_position.y + m_offset.y);
 	}
-	else
+	else if (m_velocity.x > 0.0f)
 	{
 		m_sprite.setScale(SCALE, SCALE);
 		m_offset.x = m_sprite.getGlobalBounds().width;
@@ -486,6 +528,11 @@ void Player::adjustSprite()
 		m_offset.y = m_sprite.getGlobalBounds().height;
 		m_offset.y /= 2.0f;
 		m_sprite.setOrigin(m_offset);
-		m_sprite.setPosition(m_position.x - m_offset.x, m_position.y + m_offset.y);
+		m_offset.x = -m_offset.x;
+		m_sprite.setPosition(m_position.x + m_offset.x * (SCALE), m_position.y + m_offset.y);
+	}
+	else
+	{
+		m_sprite.setPosition(m_position.x + m_offset.x * (SCALE), m_position.y + m_offset.y);
 	}
 }

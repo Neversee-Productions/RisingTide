@@ -29,7 +29,7 @@ private:
 	void removePlatfrom();
 
 	void checkcollision();
-	void checkcollision(Player & player, Platform & platform);
+	void checkcollision(Player & player, std::shared_ptr<Platform> & platform);
 
 	void loadAnimTextures();
 
@@ -62,7 +62,7 @@ private:
 	float m_accumulatedTime = 0;
 
 	// platform instance
-	std::vector<std::unique_ptr<Platform>> m_platforms;
+	std::vector<std::shared_ptr<Platform>> m_platforms;
 
 	// Loading texture from file
 	void loadTexture(sf::Texture&, std::string);
@@ -88,9 +88,11 @@ private:
 	sf::Sprite m_cliffRightSprite;
 	sf::Sprite m_cliffLeftSprite;
 	sf::Texture m_cliffTexture;
+	sf::Texture m_skyTexture;
+	sf::Sprite m_skySprite;
 
 	// floor
-	std::unique_ptr<Platform> m_floor;
+	std::shared_ptr<Platform> m_floor;
 
 	/*------GAME MUSIC--------*/
 	sf::SoundBuffer m_musicBuffer;
