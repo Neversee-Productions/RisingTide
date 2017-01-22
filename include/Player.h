@@ -61,6 +61,8 @@ public:
 
 	void wallBounce(const sf::FloatRect &);
 
+	float m_heightTravelled = 0.0f;
+
 	// offset constant the hitbox for falling off ledges
 	float const LEDGE_BOX_OFFSET = 10.0f;
 
@@ -87,6 +89,7 @@ public:
 	sf::Vector2f m_velocity;
 private:
 	sf::Vector2f m_acceleration;
+	sf::Vector2f m_positionPrev;
 
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
@@ -124,6 +127,8 @@ private:
 
 	// platform that you are standing on
 	std::shared_ptr<Platform> m_standPlatform;
+
+	std::shared_ptr<Platform> m_standPlatformPrev;
 
 };
 

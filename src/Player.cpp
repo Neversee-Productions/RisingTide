@@ -79,6 +79,7 @@ Player::~Player()
 /// <param name="dt"> delta time, time since last update </param>
 void Player::update(const double & dt)
 {
+	m_positionPrev = m_position;
 	/* SEB */
 
 	//acceleration = -coeffFriction*g*unitVelocity
@@ -117,6 +118,12 @@ void Player::update(const double & dt)
 		if (m_velocity.y >= 1.0f)
 		{
 			m_playerState = PlayerState::Fall;
+		}
+		if (m_standPlatform != nullptr && m_standPlatformPrev != nullptr &&
+			m_standPlatformPrev->getBounds().top > m_standPlatform->getBounds().top)
+		{
+			m_heightTravelled += (m_positionPrev.y - m_position.y)* 0.01f;
+			std::cout << m_heightTravelled << std::endl;
 		}
 		break;
 	case Player::PlayerState::Fall:
@@ -358,7 +365,6 @@ void Player::trackAnimStates()
 	default:
 		break;
 	}
-	std::cout << m_velocity.y << std::endl;
 	//switch (m_animState)
 	//{
 	//case Player::AnimState::Idle:
@@ -494,6 +500,10 @@ sf::FloatRect Player::getBounds() const
 
 void Player::land(std::shared_ptr<Platform> & landPlatform, const double & dt)
 {
+	if (m_standPlatform != nullptr)
+	{
+		m_standPlatformPrev = std::shared_ptr<Platform>(m_standPlatform);
+	}
 	m_standPlatform = std::shared_ptr<Platform>(landPlatform);
 	m_playerState = PlayerState::Ground;
 	m_position.y = m_standPlatform->getBounds().top - m_sprite.getGlobalBounds().height;
