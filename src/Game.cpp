@@ -137,9 +137,10 @@ void Game::update(sf::Time const & dt)
 		}
 		else
 		{
-		for (auto& plat : m_platforms)
-		{
-			plat->m_fallSpeed = 1.7f;
+			for (auto& plat : m_platforms)
+			{
+				plat->m_fallSpeed = 1.7f;
+			}
 		}
 		m_floor->update(dt);
 
@@ -228,6 +229,16 @@ void Game::checkcollision()
 	checkcollision(m_player, m_cliffRightSprite);
 }
 
+void Game::checkcollision(Player & player)
+{
+	sf::FloatRect boxPlayer = player.getBounds();
+	if (boxPlayer.top > DEATH_HEIGHT)
+	{
+		// player dies
+
+	}
+}
+
 void Game::checkcollision(Player & player, std::shared_ptr<Platform> & platform)
 {
 	sf::FloatRect playerBox, platformBox;
@@ -239,8 +250,8 @@ void Game::checkcollision(Player & player, std::shared_ptr<Platform> & platform)
 		if (
 			platformBox.top < playerBox.top + playerBox.height + LANDING_OFFSET &&
 			platformBox.top + platformBox.height > playerBox.top + playerBox.height + LANDING_OFFSET &&
-			platformBox.left < playerBox.left + playerBox.width &&
-			platformBox.left + platformBox.width > playerBox.left
+			platformBox.left + player.LEDGE_BOX_OFFSET < playerBox.left + playerBox.width &&
+			platformBox.left + platformBox.width - player.LEDGE_BOX_OFFSET > playerBox.left
 			)
 		{
 			player.land(platform, TIME_PER_UPDATE.asSeconds());

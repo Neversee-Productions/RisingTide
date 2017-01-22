@@ -29,6 +29,7 @@ private:
 	void removePlatfrom();
 
 	void checkcollision();
+	void checkcollision(Player & player);
 	void checkcollision(Player & player, std::shared_ptr<Platform> & platform);
 	void checkcollision(Player & player, sf::Sprite & wall);
 
@@ -52,6 +53,9 @@ private:
 	float const LANDING_OFFSET = -10.0f;
 	// hit wall offset
 	float const HIT_WALL_OFFSET = 35.0f;
+
+	// death line
+	float const DEATH_HEIGHT = 500.0f;
 
 	// Main Game window
 	sf::RenderWindow m_window;

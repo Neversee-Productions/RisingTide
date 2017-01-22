@@ -9,6 +9,7 @@
 #include "Thor\Animations\Animator.hpp"
 #include "Thor\Animations\FrameAnimation.hpp"
 #include "Platform.h"
+#include <iostream>
 
 class Player
 {
@@ -59,6 +60,9 @@ public:
 	void adjustSprite();
 
 	void wallBounce(const sf::FloatRect &);
+
+	// offset constant the hitbox for falling off ledges
+	float const LEDGE_BOX_OFFSET = 10.0f;
 
 private:
 	void processInput();
@@ -120,9 +124,6 @@ private:
 
 	// platform that you are standing on
 	std::shared_ptr<Platform> m_standPlatform;
-
-	// offset constant the hitbox for falling off ledges
-	float const LEDGE_BOX_OFFSET = 10.0f;
 
 };
 
