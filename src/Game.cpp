@@ -31,9 +31,11 @@ Game::Game()
 	m_cliffLeftSprite.setPosition(sf::Vector2f(m_cliffLeftSprite.getGlobalBounds().width, 0.0f));
 	m_cliffRightSprite.setPosition(sf::Vector2f(m_window.getSize().x - m_cliffRightSprite.getGlobalBounds().width, 0));
 	m_waveSprite.setTexture(m_waveTexture);
+	m_waveSprite.setPosition(-170.0f, 400.0f);
 	m_floor.reset(new Platform(m_floorTexture, FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y));
 	m_splashScreen.reset(new SplashScreen(m_splashScreenTexture));
 	loadAnimTextures();
+	m_waveAnimator.playAnimation(0, true);
 }
 
 /// Default destructor
@@ -100,6 +102,9 @@ void Game::update(sf::Time const & dt)
 
 		m_floor->update(dt);
 
+		m_waveAnimator.update(dt);
+		m_waveAnimator.animate(m_waveSprite);
+
 		checkcollision();
 		break;
 	default:
@@ -126,6 +131,7 @@ void Game::render()
 		m_floor->draw(m_window);
 		m_window.draw(m_cliffLeftSprite);
 		m_window.draw(m_cliffRightSprite);
+		m_window.draw(m_waveSprite);
 		break;
 	default:
 		break;
@@ -175,7 +181,8 @@ void Game::checkcollision()
 		checkcollision(m_player, platform);
 	}
 	checkcollision(m_player, m_floor);
-
+	checkcollision(m_player, m_cliffLeftSprite);
+	checkcollision(m_player, m_cliffRightSprite);
 }
 
 void Game::checkcollision(Player & player, std::shared_ptr<Platform> & platform)
@@ -195,6 +202,20 @@ void Game::checkcollision(Player & player, std::shared_ptr<Platform> & platform)
 		{
 			player.land(platform, TIME_PER_UPDATE.asSeconds());
 		}
+	}
+	player.checkland();
+}
+
+void Game::checkcollision(Player & player, sf::Sprite & wall)
+{
+	sf::FloatRect boxPlayer, boxWall;
+	boxPlayer = player.getBounds();
+	boxWall = wall.getGlobalBounds();
+
+	if (boxWall.left + HIT_WALL_OFFSET > boxPlayer.left + boxPlayer.width ||
+		boxWall.left + boxWall.width - HIT_WALL_OFFSET < boxPlayer.left)
+	{
+		player.wallBounce(boxWall);
 	}
 }
 
@@ -222,4 +243,26 @@ void Game::loadAnimTextures()
 	m_textMap[Player::AnimState::FallLoop] = texture;
 
 	m_player.addAnimTextures(m_textMap);
+
+	loadTexture(texture, ".\\resources\\waves\\wave_animated.png");
+	// wave = 1132 * 237 (2x10)
+	addAnimRects(1132, 237, 2, 10);
+
+}
+
+void Game::addAnimRects(int width, int height, int framesWidth, int framesHeight)
+{
+	std::unique_ptr<thor::FrameAnimation> ptrAnimation;
+	ptrAnimation.reset(new thor::FrameAnimation());
+	sf::IntRect textRect(0, 0, width, height);
+
+	for (int x = 0; x < (width * framesWidth); x += width)
+	{
+		for (int y = 0; y < (height * framesHeight); y += height)
+		{
+			textRect.left = x; textRect.top = y;
+			ptrAnimation->addFrame(1.0f, textRect);
+		}
+	}
+	m_waveAnimator.addAnimation(0, (*ptrAnimation), WAVE_DUR);
 }

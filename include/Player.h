@@ -52,9 +52,12 @@ public:
 	sf::FloatRect getBounds() const;
 
 	void land(std::shared_ptr<Platform> &, const double &);
+	void checkland();
 
 	void initSprite();
 	void adjustSprite();
+
+	void wallBounce(const sf::FloatRect &);
 
 private:
 	void processInput();
@@ -109,6 +112,9 @@ private:
 
 	// platform that you are standing on
 	std::shared_ptr<Platform> m_standPlatform;
+
+	// offset constant the hitbox for falling off ledges
+	float const LEDGE_BOX_OFFSET = 10.0f;
 
 };
 
