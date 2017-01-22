@@ -9,9 +9,15 @@ Game::Game()
 {
 	srand(time(NULL));
 
+	sf::Texture licenceText;
+	loadTexture(licenceText, ".\\resources\\backgrounds\\licence_screen.png");
+	m_licenceScreen.reset(new Licence(licenceText));
+
 	std::unique_ptr<Platform> platform;
 	platform.reset(new Platform(m_platformTexture));
 	m_platforms.push_back(std::move(platform));
+
+
 
 	if (!m_player.loadTexture(".\\resources\\player\\player.png"))
 	{
@@ -57,6 +63,11 @@ Game::Game()
 	m_splashScreen.reset(new SplashScreen(m_splashScreenTexture));
 	loadAnimTextures();
 	m_waveAnimator.playAnimation(0, true);
+
+	sf::Texture gameOverText;
+	loadTexture(gameOverText, ".\\resources\\backgrounds\\");
+	m_gameOverScreen.reset(new GameOver(gameOverText));
+
 }
 
 /// Default destructor
@@ -112,6 +123,12 @@ void Game::update(sf::Time const & dt)
 	
 	switch (m_gameState)
 	{
+	case Game::GameState::Licence:
+		if (m_licenceScreen->update(dt))
+		{
+			m_gameState = GameState::Splash;
+		}
+		break;
 	case Game::GameState::Splash:
 		break;
 	case Game::GameState::Gameplay:
@@ -149,6 +166,12 @@ void Game::update(sf::Time const & dt)
 
 		checkcollision();
 		break;
+	case GameState::GameOver:
+		if (m_gameOverScreen->update(dt))
+		{
+			m_window.close();
+		}
+		break;
 	default:
 		break;
 	}
@@ -160,9 +183,13 @@ void Game::render()
 	m_window.clear();
 	switch (m_gameState)
 	{
+	case Game::GameState::Licence:
+		m_licenceScreen->draw(m_window);
+		break;
 	case Game::GameState::Splash:
 		m_splashScreen->draw(m_window);
 		break;
+	case GameState::GameOver:
 	case Game::GameState::Gameplay:
 		m_window.draw(m_skySprite);
 		for (auto& plat : m_platforms)
@@ -175,6 +202,10 @@ void Game::render()
 		m_window.draw(m_cliffLeftSprite);
 		m_window.draw(m_cliffRightSprite);
 		m_window.draw(m_waveSprite);
+		if (m_gameState == GameState::GameOver)
+		{
+			m_gameOverScreen->draw(m_window);
+		}
 		break;
 	default:
 		break;
