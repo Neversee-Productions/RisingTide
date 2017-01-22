@@ -34,6 +34,19 @@ Game::Game()
 	}
 	m_music.play();
 	m_music.setLoop(true);
+    
+	loadTexture(m_splashScreenTexture, ".\\resources\\backgrounds\\splash_screen.png");
+	loadTexture(m_waveTexture, ".\\resources\\waves\\wave_animated.png");
+	loadTexture(m_cliffTexture, ".\\resources\\backgrounds\\cliff.png");
+	m_cliffRightSprite.setTexture(m_cliffTexture);
+	m_cliffLeftSprite.setTexture(m_cliffTexture);
+	m_cliffLeftSprite.setScale(-1.0f, 1.0f);
+	m_cliffLeftSprite.setPosition(sf::Vector2f(m_cliffLeftSprite.getGlobalBounds().width, 0.0f));
+	m_cliffRightSprite.setPosition(sf::Vector2f(m_window.getSize().x - m_cliffRightSprite.getGlobalBounds().width, 0));
+	m_waveSprite.setTexture(m_waveTexture);
+	m_floor.reset(new Platform(m_floorTexture, FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y));
+	m_splashScreen.reset(new SplashScreen(m_splashScreenTexture));
+	loadAnimTextures();
 }
 
 /// Default destructor
@@ -69,6 +82,12 @@ void Game::proccessEvents()
 		case sf::Event::Closed:
 			m_window.close();
 			break;
+		case sf::Event::KeyPressed:
+			if (m_gameState == GameState::Splash)
+			{
+				m_gameState = GameState::Gameplay;
+			}
+			break;
 		default:
 			break;
 		}
@@ -78,38 +97,47 @@ void Game::proccessEvents()
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
-	if (!m_music.Playing)
-	{
-		m_music.play();
-	}
 	spawnNextPlatfrom();
 	removePlatfrom();
-	for (std::unique_ptr<Platform>& plat : m_platforms)
+	
+	switch (m_gameState)
 	{
-		plat->update(dt);
-	}
+	case Game::GameState::Splash:
+		break;
+	case Game::GameState::Gameplay:
+		if (spawnNextPlatfrom());
+		removePlatfrom();
+		for (std::unique_ptr<Platform>& plat : m_platforms)
 
-	m_player.update(dt.asSeconds());
-
-	m_floor->update(dt);
-
-	checkcollision();
-
-	/*TESTING GAMEFLOW*/
-	if (m_player.m_position.y <= 0)
-	{
-		m_player.m_position.y = 0;
-		for (auto& plat : m_platforms)
 		{
-			plat->m_fallSpeed = 12.0f;
+			plat->update(dt);
 		}
-	}
-	else
-	{
+
+		m_player.update(dt.asSeconds());
+
+		checkcollision();
+
+		/*TESTING GAMEFLOW*/
+		if (m_player.m_position.y <= 0)
+		{
+			m_player.m_position.y = 0;
+			for (auto& plat : m_platforms)
+			{
+				plat->m_fallSpeed = 12.0f;
+			}
+		}
+		else
+		{
 		for (auto& plat : m_platforms)
 		{
 			plat->m_fallSpeed = 1.7f;
 		}
+		m_floor->update(dt);
+
+		checkcollision();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -117,15 +145,25 @@ void Game::update(sf::Time const & dt)
 void Game::render()
 {
 	m_window.clear();
-	for (std::unique_ptr<Platform>& plat : m_platforms)
+	switch (m_gameState)
 	{
-		plat->draw(m_window);
+	case Game::GameState::Splash:
+		m_splashScreen->draw(m_window);
+		break;
+	case Game::GameState::Gameplay:
+		for (std::unique_ptr<Platform>& plat : m_platforms)
+		{
+			plat->draw(m_window);
+		}
+		m_player.draw(m_window);
+
+		m_floor->draw(m_window);
+		m_window.draw(m_cliffLeftSprite);
+		m_window.draw(m_cliffRightSprite);
+		break;
+	default:
+		break;
 	}
-  
-	m_player.draw(m_window);
-
-	m_floor->draw(m_window);
-
 	m_window.display();
 }
 
@@ -192,4 +230,30 @@ void Game::checkcollision(Player & player, Platform & platform)
 			player.land(platformBox.top + LANDING_OFFSET, TIME_PER_UPDATE.asSeconds());
 		}
 	}
+}
+
+void Game::loadAnimTextures()
+{
+	Player::TextureCollection m_textMap;
+	sf::Texture texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_idle.png");
+	m_textMap[Player::AnimState::Idle] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_running.png");
+	m_textMap[Player::AnimState::Run] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_jump_start.png");
+	m_textMap[Player::AnimState::JumpStart] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_jump_loop.png");
+	m_textMap[Player::AnimState::JumpLoop] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_fall_start.png");
+	m_textMap[Player::AnimState::FallStart] = texture;
+
+	loadTexture(texture, ".\\resources\\player\\player_fall_loop.png");
+	m_textMap[Player::AnimState::FallLoop] = texture;
+
+	m_player.addAnimTextures(m_textMap);
 }
