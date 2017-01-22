@@ -91,8 +91,7 @@ void Game::update(sf::Time const & dt)
 	case Game::GameState::Gameplay:
 		if (spawnNextPlatfrom());
 		removePlatfrom();
-		for (std::unique_ptr<Platform>& plat : m_platforms)
-
+		for (auto& plat : m_platforms)
 		{
 			plat->update(dt);
 		}
@@ -118,7 +117,7 @@ void Game::render()
 		m_splashScreen->draw(m_window);
 		break;
 	case Game::GameState::Gameplay:
-		for (std::unique_ptr<Platform>& plat : m_platforms)
+		for (auto& plat : m_platforms)
 		{
 			plat->draw(m_window);
 		}
@@ -137,7 +136,7 @@ void Game::render()
 /// Spawn a platform after a set amount of time
 bool Game::spawnNextPlatfrom()
 {
-	std::unique_ptr<Platform> platform;
+	std::shared_ptr<Platform> platform;
 	platform.reset(new Platform(m_platformTexture));
 
 	if (m_platforms.back()->getNextPlatform())
@@ -173,16 +172,17 @@ void Game::checkcollision()
 {
 	for (auto & platform : m_platforms)
 	{
-		checkcollision(m_player, *platform);
+		checkcollision(m_player, platform);
 	}
-	checkcollision(m_player, *m_floor);
+	checkcollision(m_player, m_floor);
+
 }
 
-void Game::checkcollision(Player & player, Platform & platform)
+void Game::checkcollision(Player & player, std::shared_ptr<Platform> & platform)
 {
 	sf::FloatRect playerBox, platformBox;
 	playerBox = player.getBounds();
-	platformBox = platform.getBounds();
+	platformBox = platform->getBounds();
 
 	if (player.m_velocity.y > 0.0f)
 	{
@@ -193,7 +193,7 @@ void Game::checkcollision(Player & player, Platform & platform)
 			platformBox.left + platformBox.width > playerBox.left
 			)
 		{
-			player.land(platformBox.top + LANDING_OFFSET, TIME_PER_UPDATE.asSeconds());
+			player.land(platform, TIME_PER_UPDATE.asSeconds());
 		}
 	}
 }

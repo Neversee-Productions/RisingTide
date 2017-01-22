@@ -7,9 +7,7 @@
 #include <math.h>
 #include "Thor\Animations\Animator.hpp"
 #include "Thor\Animations\FrameAnimation.hpp"
-
-
-
+#include "Platform.h"
 
 class Player
 {
@@ -53,7 +51,7 @@ public:
 	PlayerState getPlayerState() const;
 	sf::FloatRect getBounds() const;
 
-	void land(const float &, const double &);
+	void land(std::shared_ptr<Platform> &, const double &);
 
 	void initSprite();
 	void adjustSprite();
@@ -104,10 +102,13 @@ private:
 	const sf::Time FALL_LOOP_DUR = sf::seconds(2.0f);
 
 	// scale of the sprite
-	float const SCALE = 0.5f;
+	float const SCALE = 0.3f;
 
 	// offset to the origin
 	sf::Vector2f m_offset;
+
+	// platform that you are standing on
+	std::shared_ptr<Platform> m_standPlatform;
 
 };
 
