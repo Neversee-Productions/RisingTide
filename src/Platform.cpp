@@ -59,6 +59,11 @@ bool Platform::getNextPlatform()
 	return m_nextPlatform;
 }
 
+sf::Vector2f Platform::getPosition() const
+{
+	return m_position;
+}
+
 void Platform::initSprite(sf::Vector2f & pos)
 {
 	m_sprite.setTexture(m_texture);

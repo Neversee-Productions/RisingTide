@@ -16,6 +16,7 @@ public:
 	float m_fallSpeed = 1.7f; /*speed of platforms*/
 	bool getOffScreen(sf::RenderWindow& window);
 	bool getNextPlatform();
+	sf::Vector2f getPosition() const;
 	sf::FloatRect getBounds() const;
 private: 
 

@@ -22,8 +22,18 @@ Game::Game()
 	}
 	loadTexture(m_platformTexture, ".\\resources\\platform\\platform.png");
 	loadTexture(m_floorTexture, ".\\resources\\platform\\floor.png");
-
+	
 	m_floor.reset(new Platform(m_floorTexture, FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y));
+
+	if (!m_music.openFromFile(".\\resources\\sounds\\the tide rises.wav"))
+	{
+		std::string s("Error player texture (");
+		s += ".\\resources\\sounds\\the tide rises.wav";
+		s += ") was not loaded";
+		throw std::exception(s.c_str());
+	}
+	m_music.play();
+	m_music.setLoop(true);
 }
 
 /// Default destructor
@@ -68,10 +78,13 @@ void Game::proccessEvents()
 /// Main Logic update loop
 void Game::update(sf::Time const & dt)
 {
-	if (spawnNextPlatfrom());
+	if (!m_music.Playing)
+	{
+		m_music.play();
+	}
+	spawnNextPlatfrom();
 	removePlatfrom();
 	for (std::unique_ptr<Platform>& plat : m_platforms)
-
 	{
 		plat->update(dt);
 	}
@@ -81,6 +94,23 @@ void Game::update(sf::Time const & dt)
 	m_floor->update(dt);
 
 	checkcollision();
+
+	/*TESTING GAMEFLOW*/
+	if (m_player.m_position.y <= 0)
+	{
+		m_player.m_position.y = 0;
+		for (auto& plat : m_platforms)
+		{
+			plat->m_fallSpeed = 12.0f;
+		}
+	}
+	else
+	{
+		for (auto& plat : m_platforms)
+		{
+			plat->m_fallSpeed = 1.7f;
+		}
+	}
 }
 
 /// Main rendering loop
@@ -105,7 +135,7 @@ bool Game::spawnNextPlatfrom()
 	std::unique_ptr<Platform> platform;
 	platform.reset(new Platform(m_platformTexture));
 
-	if (m_platforms.back()->getNextPlatform())
+	if (m_platforms.back()->getPosition().y > 150)
 	{
 		m_platforms.push_back(std::move(platform));
 	}
@@ -130,6 +160,7 @@ void Game::loadTexture(sf::Texture& texture, std::string file)
 		throw std::exception(s.c_str());
 	}
 }
+
 
 /// <summary>
 /// Check collisions between all game elements
