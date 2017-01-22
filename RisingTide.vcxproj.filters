@@ -16,6 +16,10 @@
     <ClCompile Include="src\SplashScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Licence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameOver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.h">
@@ -30,6 +34,10 @@
     <ClInclude Include="include\SplashScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Licence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameOver.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

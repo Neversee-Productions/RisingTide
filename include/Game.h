@@ -11,6 +11,8 @@
 #include "Player.h"
 #include "Platform.h"
 #include "SplashScreen.h"
+#include "Licence.h"
+#include "GameOver.h"
 #include <memory>
 
 class Game
@@ -113,12 +115,14 @@ private:
 	/*------GAME MUSIC--------*/
 	sf::Music m_music;
 	sf::Music m_waveSound;
-
-	enum class GameState {Splash, Gameplay};
-	GameState m_gameState = GameState::Splash;
+  
+	enum class GameState { Licence, Splash, Gameplay, GameOver };
+	GameState m_gameState = GameState::Licence;
 	std::unique_ptr<SplashScreen> m_splashScreen;
 
+	std::unique_ptr<Licence> m_licenceScreen;
 
+	std::unique_ptr<GameOver> m_gameOverScreen;
 };
 
 #endif // !GAME
