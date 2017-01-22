@@ -147,7 +147,6 @@ void Game::update(sf::Time const & dt)
 		m_waveAnimator.update(dt);
 		m_waveAnimator.animate(m_waveSprite);
 
-		checkcollision();
 		break;
 	default:
 		break;
@@ -266,8 +265,8 @@ void Game::checkcollision(Player & player, sf::Sprite & wall)
 	boxPlayer = player.getBounds();
 	boxWall = wall.getGlobalBounds();
 
-	if (boxWall.left + HIT_WALL_OFFSET > boxPlayer.left + boxPlayer.width ||
-		boxWall.left + boxWall.width - HIT_WALL_OFFSET < boxPlayer.left)
+	if (boxWall.left + HIT_WALL_OFFSET < boxPlayer.left + boxPlayer.width &&
+		boxWall.left + boxWall.width - HIT_WALL_OFFSET > boxPlayer.left)
 	{
 		player.wallBounce(boxWall);
 	}

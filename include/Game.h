@@ -42,7 +42,7 @@ private:
 	sf::Time const TIME_PER_UPDATE = sf::seconds(1 / 60.0f);
 
 	// Player Start pos
-	sf::Vector2f const START_POS = sf::Vector2f(400.0f, 100.0f);
+	sf::Vector2f const START_POS = sf::Vector2f(300.0f, 90.0f);
 
 	// floor start pos
 	sf::Vector2f const FLOOR_POS = sf::Vector2f(-50.0f, 110.0f);
