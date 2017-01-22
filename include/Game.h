@@ -42,6 +42,7 @@ private:
 	
 	// Frames-per-second
 	sf::Time const TIME_PER_UPDATE = sf::seconds(1 / 60.0f);
+	sf::Time const PLATFORM_PROGRESSION_TIME = sf::seconds(3.0f);
 
 	// Player Start pos
 	sf::Vector2f const START_POS = sf::Vector2f(400.0f, 100.0f);
@@ -64,9 +65,11 @@ private:
 
 	// internal update/render clock
 	sf::Clock m_clock;
+	sf::Clock m_progressionClock;
 
 	// tracks time between frames
 	sf::Time m_elapsed;
+	sf::Time m_progressionTime;
 
 
 	float m_accumulatedTime = 0;
@@ -107,9 +110,11 @@ private:
 	// floor
 	std::shared_ptr<Platform> m_floor;
 
+	bool m_speedUp = true;
+
 	/*------GAME MUSIC--------*/
-	sf::SoundBuffer m_musicBuffer;
 	sf::Music m_music;
+	sf::Music m_waveSound;
   
 	enum class GameState { Licence, Splash, Gameplay, GameOver };
 	GameState m_gameState = GameState::Licence;

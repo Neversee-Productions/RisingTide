@@ -2,6 +2,7 @@
 #include "SFML\Graphics.hpp"
 #include <time.h>
 
+
 class Platform
 {
 public:
@@ -13,11 +14,18 @@ public:
 	void draw(sf::RenderWindow& window);
 	void update(const sf::Time& dt);
 
-	float m_fallSpeed = 1.7f; /*speed of platforms*/
+	
+	float m_previousFallSpeed = 1.7f;
 	bool getOffScreen(sf::RenderWindow& window);
 	bool getNextPlatform();
 	sf::Vector2f getPosition() const;
 	sf::FloatRect getBounds() const;
+
+	static const float BASE_FALL_SPEED;
+	static float FALL_SPEED_MULT;
+	static float m_fallSpeed; /*speed of platforms*/
+
+
 private: 
 
 	void initSprite(sf::Vector2f& pos);
@@ -27,10 +35,10 @@ private:
 	float m_randX;  /*random spawingin on x axis*/
 
 	sf::Time time;
-	const sf::Time PLATFORM_SPAWN_TIME = sf::seconds(1.7f);
 
 	bool m_nextPlatform = false;
 	bool m_offScreen = false;
+	const sf::Time PLATFORM_PROGRESSION_TIME = sf::seconds(3.0f);
 
 
 	sf::Sprite m_sprite;

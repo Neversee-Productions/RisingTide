@@ -26,6 +26,8 @@ Game::Game()
 		s += ") was not loaded";
 		throw std::exception(s.c_str());
 	}
+	
+
 	loadTexture(m_platformTexture, ".\\resources\\platform\\platform.png");
 	m_platformTexture.setSmooth(true);
 	loadTexture(m_floorTexture, ".\\resources\\platform\\floor.png");
@@ -33,15 +35,9 @@ Game::Game()
 
 	m_floor.reset(new Platform(m_floorTexture, FLOOR_POS.x, FLOOR_POS.y, FLOOR_SIZE.x, FLOOR_SIZE.y));
 
-	if (!m_music.openFromFile(".\\resources\\sounds\\the tide rises.wav"))
-	{
-		std::string s("Error player texture (");
-		s += ".\\resources\\sounds\\the tide rises.wav";
-		s += ") was not loaded";
-		throw std::exception(s.c_str());
-	}
-	m_music.play();
-	m_music.setLoop(true);
+	
+	
+
 	loadTexture(m_splashScreenTexture, ".\\resources\\backgrounds\\splash_screen.png");
 	m_splashScreenTexture.setSmooth(true);
 	loadTexture(m_waveTexture, ".\\resources\\waves\\wave_animated.png");
@@ -88,6 +84,17 @@ void Game::run()
 			m_elapsed -= TIME_PER_UPDATE;
 			update(TIME_PER_UPDATE);
 		}
+
+		m_progressionTime += m_progressionClock.restart();
+		while (m_progressionTime > PLATFORM_PROGRESSION_TIME)
+		{
+			m_progressionTime = sf::seconds(0);
+			for (auto& plat : m_platforms)
+			{
+				Platform::FALL_SPEED_MULT += 0.08f;
+			}
+		}
+
 		render();
 	}
 }
@@ -107,6 +114,27 @@ void Game::proccessEvents()
 			if (m_gameState == GameState::Splash)
 			{
 				m_gameState = GameState::Gameplay;
+				if (!m_music.openFromFile(".\\resources\\sounds\\the tide rises.wav"))
+				{
+					std::string s("Error player texture (");
+					s += ".\\resources\\sounds\\the tide rises.wav";
+					s += ") was not loaded";
+					throw std::exception(s.c_str());
+				}
+				
+				m_music.play();
+				m_music.setLoop(true);
+				m_music.setVolume(5);
+				if (!m_waveSound.openFromFile(".\\resources\\sounds\\WAVE2.wav"))
+				{
+					std::string s("Error player texture (");
+					s += ".\\resources\\sounds\\WAVE2.wav";
+					s += ") was not loaded";
+					throw std::exception(s.c_str());
+				}
+				m_waveSound.play();
+				m_waveSound.setLoop(true);
+				m_waveSound.setVolume(30);
 			}
 			break;
 		default:
@@ -144,20 +172,20 @@ void Game::update(sf::Time const & dt)
 		checkcollision();
 
 		/*TESTING GAMEFLOW*/
-		if (m_player.m_position.y <= 0)
+		if (m_player.m_position.y <= -50)
 		{
-			m_player.m_position.y = 0;
-			for (auto& plat : m_platforms)
+			m_player.m_position.y = -50;
+			if (m_speedUp)
 			{
-				plat->m_fallSpeed = 12.0f;
+				Platform::m_fallSpeed += 12.0f;
+				m_speedUp = false;
 			}
+			
 		}
 		else
 		{
-			for (auto& plat : m_platforms)
-			{
-				plat->m_fallSpeed = 1.7f;
-			}
+			Platform::m_fallSpeed = Platform::BASE_FALL_SPEED + Platform::FALL_SPEED_MULT;
+			m_speedUp = true;
 		}
 		m_floor->update(dt);
 
