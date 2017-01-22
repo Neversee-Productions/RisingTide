@@ -1,5 +1,8 @@
 #include "Platform.h"
 
+float const Platform::BASE_FALL_SPEED = 1.7f;
+float Platform::FALL_SPEED_MULT = 1.0f;
+float Platform::m_fallSpeed = 1.7f;
 
 Platform::Platform(sf::Texture texture):
 	m_texture(texture)
@@ -35,9 +38,10 @@ void Platform::draw(sf::RenderWindow & window)
 void Platform::update(const sf::Time& dt)
 {
 	time += dt;
-	if (time > PLATFORM_SPAWN_TIME)
+	if (time > PLATFORM_PROGRESSION_TIME)
 	{
-		m_nextPlatform = true;
+		m_fallSpeed += 0.2;
+		//m_previousFallSpeed = m_fallSpeed;
 	}
 	m_sprite.setPosition(m_position);
 	m_position.y+=m_fallSpeed;
