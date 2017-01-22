@@ -94,15 +94,15 @@ private:
 
 	// ANIMATION DURATIONS //
 
-	const sf::Time IDLE_DUR = sf::seconds(2.0f);
-	const sf::Time RUN_DUR = sf::seconds(2.0f);
+	const sf::Time IDLE_DUR = sf::seconds(6.0f);
+	const sf::Time RUN_DUR = sf::seconds(1.5f);
 	const sf::Time JUMP_START_DUR = sf::seconds(2.0f);
 	const sf::Time JUMP_LOOP_DUR = sf::seconds(2.0f);
 	const sf::Time FALL_START_DUR = sf::seconds(2.0f);
 	const sf::Time FALL_LOOP_DUR = sf::seconds(2.0f);
 
 	// scale of the sprite
-	float const SCALE = 0.3f;
+	float const SCALE = 0.2f;
 
 	// offset to the origin
 	sf::Vector2f m_offset;

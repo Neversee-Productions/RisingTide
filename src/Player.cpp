@@ -1,5 +1,5 @@
 #include "Player.h"
-
+#include <iostream>
 /// <summary>
 /// Gets unit vector using the formula (the vector divided by its length)
 /// x = x / sqrt(x*x + y*y)
@@ -26,7 +26,7 @@ float const Player::GRAVITY = (9.81f);
 /// Default constructor
 /// </summary>
 Player::Player()
-	: m_coefficientOfFriction(0.98f)
+	: m_coefficientOfFriction(0.8f)
 	, m_force(0)
 	, m_maxForce(300)
 	, m_forceIncrement(8)
@@ -46,7 +46,7 @@ Player::Player()
 
 
 Player::Player(sf::Vector2f const & pos)
-	: m_coefficientOfFriction(0.98f)
+	: m_coefficientOfFriction(0.8f)
 	, m_force(0)
 	, m_maxForce(300)
 	, m_forceIncrement(8)
@@ -91,6 +91,9 @@ void Player::update(const double & dt)
 
 	processInput();
 	trackAnimStates();
+	m_animator.update(sf::seconds(dt));
+	m_animator.animate(m_sprite);
+	adjustSprite();
 	switch (m_playerState)
 	{
 	case Player::PlayerState::Ground:
@@ -124,9 +127,7 @@ void Player::update(const double & dt)
 		break;
 	}
 	
-	m_animator.update(sf::seconds(dt));
-	m_animator.animate(m_sprite);
-	adjustSprite();
+
 }
 
 /// <summary>
@@ -253,11 +254,11 @@ void Player::trackAnimStates()
 		{
 			if (m_animState != AnimState::Run)
 			{
-				m_animState = AnimState::Run;
 				if (m_animator.isPlayingAnimation())
 				{
 					m_animator.stopAnimation();
 				}
+				m_animState = AnimState::Run;
 				m_sprite.setTexture(m_textureMap[m_animState]);
 				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
 				m_animator.playAnimation(m_animState, true);
@@ -267,11 +268,11 @@ void Player::trackAnimStates()
 		{
 			if (m_animState != AnimState::Idle)
 			{
-				m_animState = AnimState::Idle;
 				if (m_animator.isPlayingAnimation())
 				{
 					m_animator.stopAnimation();
 				}
+				m_animState = AnimState::Idle;
 				m_sprite.setTexture(m_textureMap[m_animState]);
 				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
 				m_animator.playAnimation(m_animState, true);
@@ -283,11 +284,11 @@ void Player::trackAnimStates()
 		{
 			if (m_animState != AnimState::JumpStart)
 			{
-				m_animState = AnimState::JumpStart;
 				if (m_animator.isPlayingAnimation())
 				{
 					m_animator.stopAnimation();
 				}
+				m_animState = AnimState::JumpStart;
 				m_sprite.setTexture(m_textureMap[m_animState]);
 				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
 				m_animator.playAnimation(m_animState, false);
@@ -295,43 +296,41 @@ void Player::trackAnimStates()
 		}
 		else if(m_animState == AnimState::JumpStart)
 		{
-			if (m_animState != AnimState::JumpLoop)
-			{
-				m_animState = AnimState::JumpLoop;
 				if (m_animator.isPlayingAnimation())
 				{
 					m_animator.stopAnimation();
 				}
+				m_animState = AnimState::JumpLoop;
 				m_sprite.setTexture(m_textureMap[m_animState]);
 				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
 				m_animator.playAnimation(m_animState, true);
-			}
+
 		}
-		else if (m_velocity.y >= 0)
+		break;
+	case Player::PlayerState::Fall:
+		if (m_velocity.y >= 0)
 		{
 			if (m_animState != AnimState::FallStart)
 			{
-				m_animState = AnimState::FallStart;
 				if (m_animator.isPlayingAnimation())
 				{
 					m_animator.stopAnimation();
 				}
+				m_animState = AnimState::FallStart;
 				m_sprite.setTexture(m_textureMap[m_animState]);
 				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
 				m_animator.playAnimation(m_animState, false);
 			}
 		}
-		break;
-	case Player::PlayerState::Fall:
 		if (m_animState == AnimState::FallStart)
 		{
 			if (m_animState != AnimState::FallLoop)
 			{
-				m_animState = AnimState::FallLoop;
 				if (m_animator.isPlayingAnimation())
 				{
 					m_animator.stopAnimation();
 				}
+				m_animState = AnimState::FallLoop;
 				m_sprite.setTexture(m_textureMap[m_animState]);
 				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
 				m_animator.playAnimation(m_animState, true);
@@ -341,11 +340,11 @@ void Player::trackAnimStates()
 		{
 			if (m_animState != AnimState::Idle)
 			{
-				m_animState = AnimState::Idle;
 				if (m_animator.isPlayingAnimation())
 				{
 					m_animator.stopAnimation();
 				}
+				m_animState = AnimState::Idle;
 				m_sprite.setTexture(m_textureMap[m_animState]);
 				m_sprite.setTextureRect(sf::IntRect(0, 0, 1, 1));
 				m_animator.playAnimation(m_animState, true);
@@ -355,25 +354,24 @@ void Player::trackAnimStates()
 	default:
 		break;
 	}
-
-	
-	switch (m_animState)
-	{
-	case Player::AnimState::Idle:
-		break;
-	case Player::AnimState::Run:
-		break;
-	case Player::AnimState::JumpStart:
-		break;
-	case Player::AnimState::JumpLoop:
-		break;
-	case Player::AnimState::FallStart:
-		break;
-	case Player::AnimState::FallLoop:
-		break;
-	default:
-		break;
-	}
+	std::cout << m_velocity.y << std::endl;
+	//switch (m_animState)
+	//{
+	//case Player::AnimState::Idle:
+	//	break;
+	//case Player::AnimState::Run:
+	//	break;
+	//case Player::AnimState::JumpStart:
+	//	break;
+	//case Player::AnimState::JumpLoop:
+	//	break;
+	//case Player::AnimState::FallStart:
+	//	break;
+	//case Player::AnimState::FallLoop:
+	//	break;
+	//default:
+	//	break;
+	//}
 }
 
 void Player::lateralMovement(float num)

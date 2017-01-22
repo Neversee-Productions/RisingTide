@@ -88,6 +88,8 @@ private:
 	sf::Sprite m_cliffRightSprite;
 	sf::Sprite m_cliffLeftSprite;
 	sf::Texture m_cliffTexture;
+	sf::Texture m_skyTexture;
+	sf::Sprite m_skySprite;
 
 	// floor
 	std::shared_ptr<Platform> m_floor;

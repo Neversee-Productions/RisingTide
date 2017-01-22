@@ -21,13 +21,22 @@ Game::Game()
 		throw std::exception(s.c_str());
 	}
 	loadTexture(m_platformTexture, ".\\resources\\platform\\platform.png");
+	m_platformTexture.setSmooth(true);
 	loadTexture(m_floorTexture, ".\\resources\\platform\\floor.png");
+	m_floorTexture.setSmooth(true);
 	loadTexture(m_splashScreenTexture, ".\\resources\\backgrounds\\splash_screen.png");
+	m_splashScreenTexture.setSmooth(true);
 	loadTexture(m_waveTexture, ".\\resources\\waves\\wave_animated.png");
+	m_waveTexture.setSmooth(true);
 	loadTexture(m_cliffTexture, ".\\resources\\backgrounds\\cliff.png");
+	m_cliffTexture.setSmooth(true);
+	loadTexture(m_skyTexture, ".\\resources\\backgrounds\\sky.png");
+	m_skyTexture.setSmooth(true);
+	m_skySprite.setTexture(m_skyTexture);
 	m_cliffRightSprite.setTexture(m_cliffTexture);
 	m_cliffLeftSprite.setTexture(m_cliffTexture);
-	m_cliffLeftSprite.setScale(-1.0f, 1.0f);
+	m_cliffLeftSprite.setScale(-1.0f, 0.5f);
+	m_cliffRightSprite.setScale(1.0f, 0.5f);
 	m_cliffLeftSprite.setPosition(sf::Vector2f(m_cliffLeftSprite.getGlobalBounds().width, 0.0f));
 	m_cliffRightSprite.setPosition(sf::Vector2f(m_window.getSize().x - m_cliffRightSprite.getGlobalBounds().width, 0));
 	m_waveSprite.setTexture(m_waveTexture);
@@ -117,6 +126,7 @@ void Game::render()
 		m_splashScreen->draw(m_window);
 		break;
 	case Game::GameState::Gameplay:
+		m_window.draw(m_skySprite);
 		for (auto& plat : m_platforms)
 		{
 			plat->draw(m_window);
