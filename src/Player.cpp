@@ -40,6 +40,7 @@ Player::Player()
 	, m_gravity(GRAVITY * PIXEL_TO_UNIT)
 	, m_animator(thor::Animator<sf::Sprite, AnimState>())
 {
+	initSound();
 	initSprite();
 }
 
@@ -59,6 +60,7 @@ Player::Player(sf::Vector2f const & pos)
 	, m_gravity(GRAVITY * PIXEL_TO_UNIT)
 	, m_animator(thor::Animator<sf::Sprite, AnimState>())
 {
+	initSound();
 	initSprite();
 }
 
@@ -218,6 +220,7 @@ void Player::processInput()
 		lateralMovement(1.0f);
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
+			playSound();
 			m_velocity.y += JUMP_FORCE.y * PIXEL_TO_UNIT;
 			m_playerState = PlayerState::Jump;
 		}
@@ -260,6 +263,7 @@ void Player::trackAnimStates()
 		}
 		break;
 	case Player::PlayerState::Jump:
+		
 		if (m_animState == AnimState::Idle || m_animState == AnimState::Run)
 		{
 			m_animState = AnimState::JumpStart;
@@ -384,6 +388,56 @@ void Player::lateralMovement(float num)
 	if (pressed)
 	{
 		m_velocity = (sf::Vector2f(m_force * 1.5, m_velocity.y));
+	}
+}
+
+void Player::initSound()
+{
+	if (!m_soundbuffer[0].loadFromFile(".\\resources\\sounds\\Jump1.wav"))
+	{
+		std::string s("Error player texture (");
+		s += ".\\resources\\sounds\\WALK.wav";
+		s += ") was not loaded";
+		throw std::exception(s.c_str());
+	}
+	m_jump[0].setBuffer(m_soundbuffer[0]);
+
+	if (!m_soundbuffer[1].loadFromFile(".\\resources\\sounds\\Jump2.wav"))
+	{
+		std::string s("Error player texture (");
+		s += ".\\resources\\sounds\\WALK.wav";
+		s += ") was not loaded";
+		throw std::exception(s.c_str());
+	}
+	m_jump[1].setBuffer(m_soundbuffer[1]);
+
+	if (!m_soundbuffer[2].loadFromFile(".\\resources\\sounds\\Jump4.wav"))
+	{
+		std::string s("Error player texture (");
+		s += ".\\resources\\sounds\\WALK.wav";
+		s += ") was not loaded";
+		throw std::exception(s.c_str());
+	}
+	m_jump[2].setBuffer(m_soundbuffer[2]);
+}
+
+void Player::playSound()
+{
+	int random = rand() % 3 + 1;
+
+	switch (random)
+	{
+	case 1:
+		m_jump[0].play();
+		break;
+	case 2:
+		m_jump[1].play();
+		break;
+	case 3:
+		m_jump[2].play();
+		break;
+	default:
+		break;
 	}
 }
 	

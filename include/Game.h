@@ -92,6 +92,10 @@ private:
 	// floor
 	std::unique_ptr<Platform> m_floor;
 
+	/*------GAME MUSIC--------*/
+	sf::SoundBuffer m_musicBuffer;
+	sf::Music m_music;
+  
 	enum class GameState {Splash, Gameplay};
 	GameState m_gameState = GameState::Splash;
 	std::unique_ptr<SplashScreen> m_splashScreen;

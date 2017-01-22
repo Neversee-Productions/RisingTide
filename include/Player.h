@@ -3,13 +3,11 @@
 
 // player includes
 #include "SFML\Graphics.hpp"
+#include "SFML\Audio.hpp"
 #include <memory>
 #include <math.h>
 #include "Thor\Animations\Animator.hpp"
 #include "Thor\Animations\FrameAnimation.hpp"
-
-
-
 
 class Player
 {
@@ -62,7 +60,10 @@ private:
 	void processInput();
 	void trackAnimStates();
 	void lateralMovement(float num);
-
+  
+	void initSound();
+	void playSound();
+  
 	// movement CONSTANTS
 	sf::Vector2f const JUMP_FORCE = sf::Vector2f(0.0f, -8.0f);
 
@@ -87,6 +88,10 @@ private:
 	// gravity in units
 	float m_gravity;
 
+	// Sounds
+	sf::Sound m_jump[3];
+	sf::SoundBuffer m_soundbuffer[3];
+	
 	// Plays stored animations
 	thor::Animator<sf::Sprite, AnimState> m_animator;
 	
